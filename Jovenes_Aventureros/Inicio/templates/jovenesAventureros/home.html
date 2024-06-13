@@ -1,0 +1,27 @@
+{% extends "jovenesAventureros/base.html" %}
+
+{% load static %}
+
+{% block content %}
+<p class="p">¿Que es FutPlayful Predictions ?</p>
+  <div class="overlap-group">
+  <div class="frame">
+  <p class="futplayful">
+  FutPlayful Predictions es un web de prediciones deportivas, que haciendo uso de técnicas de aprendizaje
+  automático conseguimos devolver predicciones de partidos de la Primera y Segunda División indicando el resultado del partido
+  mediante <br />1 -&gt; Local<br />X-&gt; Empate<br />2 -&gt; Visistante<br>
+  Además cuenta con la funcionalidad de poder comparar equipos de ambas ligas y realizar una porra de las diferentes Quinielas que ofrecemos
+  </p>
+  </div>
+  <img class="image" src="{% static 'JA/img/logoJ.jpg' %}" />
+  </div>
+<div class="bo">
+    <p class="futplayful-2" style="color:rgba(26, 53, 199, 1)">
+    FutPlayful Predictions no es una web para fomentar el uso de apuestas, sino más bien consienciar acerca uso
+    de los juegos de azar y ejemplificando que el fútbol como deporte no es una ciencia exacta, en la que todo
+    es posible. <br />
+    <br />Si al utilizar nuestos datos decide aplicarlos en alguna apuesta o juego de azar recuerde jugar simpre
+    con responsabilidad&nbsp;&nbsp;<br />y solo si eres mayor de edad
+    </p>
+</div>
+{% endblock %}  

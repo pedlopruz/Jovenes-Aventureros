@@ -1,0 +1,11 @@
+:root {
+    --prueba: rgba(0, 0, 0, 1);
+    --azul: #FBF707;
+    --blaugrana: rgba(144, 3, 79, 1);
+    --prueba-font-family: "Sora", Helvetica;
+    --prueba-font-weight: 400;
+    --prueba-font-size: 16px;
+    --prueba-letter-spacing: 0px;
+    --prueba-line-height: normal;
+    --prueba-font-style: normal;
+    }

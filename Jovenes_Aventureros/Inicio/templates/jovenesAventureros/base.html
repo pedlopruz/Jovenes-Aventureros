@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+{% load static %}
+<meta charset="utf-8" />
+<!-- Bootstrap -->
+<link href="{% static 'JA/vendor/bootstrap/css/bootstrapp.min.css'%}" rel="stylesheet">
+
+<!-- Fonts -->
+    
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet"> 
+<link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
+
+<link href="{% static 'JA/css/gestion.css'%}" rel="stylesheet">
+<link href="{% static 'JA/css/styleguide.css'%}" rel="stylesheet">
+</head>
+<body>
+  <div class="pgina-de-inicio">
+  <div class="div">
+  <a href = "{% url 'Home' %}"><img class="logo" src="{% static 'JA/img/prueba.jpg' %}"/></a>
+  {% block content %}
+  {% endblock%}
+  <div class="frame-3">
+  <div class="text-wrapper-3"><a href="#" style="color: rgba(26, 53, 199, 1)">Predicciones</a></div>
+  <div class="text-wrapper-4"><a href="#" style="color: rgba(26, 53, 199, 1)">Comparar Equipos</a></div>
+  <div class="text-wrapper-5"><a href="#" style="color: rgba(26, 53, 199, 1)">Porra Deportiva</a></div>
+  </div>
+  </div>
+  </div>
+  </body>
