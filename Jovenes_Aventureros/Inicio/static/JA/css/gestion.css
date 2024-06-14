@@ -282,7 +282,7 @@
 }
 
 .pgina-de-inicio .btn {
-  box-shadow: 0px 3px 3px 0px rgba(144, 3, 79, 1);
+  box-shadow: 0px 3px 3px 0px var(--azul);
 }
 
 .pgina-de-inicio .btn2 {
@@ -327,7 +327,7 @@
 
 .pgina-de-inicio .contenedorFormularioPerfil{
 
-  background-color: #1935c6;
+  background-color: var(--azul);
   width: 50%;
   margin: 20px auto;
   border-radius: 5px;
@@ -339,7 +339,7 @@
 .pgina-de-inicio .boRE {
   width: 1466px;
   height: 157px;
-  margin-top: calc(100% - 550px);
+  margin-top: calc(100% - 400px);
   left: 0;
   right: 0;
   position: relative;
@@ -369,7 +369,7 @@
 .pgina-de-inicio .boIni {
   width: 1466px;
   height: 157px;
-  margin-top: calc(100% - 550px);
+  margin-top: calc(100% - 400px);
   left: 0;
   right: 0;
   position: relative;
@@ -395,8 +395,8 @@
 
 .pgina-de-inicio .perfil {
   position: absolute;
-  top: 240px;
-  left: 685px;
+  top: 280px;
+  left: 580px;
   font-family: "Sora-Regular", Helvetica;
   font-weight: 400;
   color: #000000;
@@ -467,9 +467,9 @@
 
   background-color: white;
   width: 50%;
-  margin: 10px auto;
   border-radius: 5px;
   padding: 1px 0px;
+  left: 200px;
 
 
 
@@ -478,6 +478,8 @@
 .pgina-de-inicio .table {
 
   border-collapse: collapse;
+  margin-top: 60px;
+  margin-left: -12px;
   width: 100%;
   background-color: whitesmoke; /* Color marrón */
 }
@@ -555,15 +557,15 @@
 
 .pgina-de-inicio .th {
   background-color: var(--azul);
-  color: white; /* Color marrón más oscuro para encabezados */
+  color: rgb(34, 81, 249); /* Color marrón más oscuro para encabezados */
 }
 .pgina-de-inicio .tdv {
-  background-color:  rgb(34, 81, 249);;
+  background-color:  rgb(56, 249, 34);;
   color: white /* Color marrón más oscuro para encabezados */
 }
 
 .pgina-de-inicio .tdr {
-  background-color: rgb(50, 218, 248);
+  background-color: rgb(120, 3, 14);
   color: #000; /* Color marrón más oscuro para encabezados */
 }
 
@@ -620,9 +622,9 @@
 }
 
 
-.pgina-de-inicio .gestion {
+.pgina-de-inicio .gestiones {
   position: absolute;
-  top: 240px;
+  top: 300px;
   left: 560px;
   font-family: "Sora-Regular", Helvetica;
   font-weight: 400;

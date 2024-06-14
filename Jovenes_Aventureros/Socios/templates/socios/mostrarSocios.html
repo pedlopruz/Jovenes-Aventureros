@@ -1,0 +1,62 @@
+{% extends "jovenesAventureros/base.html" %}
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block content %}
+<p class="gestiones">Gestión de Socios</p>
+  <div class="overlap-groupRegister">
+    <form action="buscar/" method="GET" style="margin-left: 850px;">
+      <input type="text" name="usern">
+      <button class="btn2 btn-success" style="background-color: #FBF707;color: rgba(26, 53, 199, 1);">Buscar Socio</button>
+  </form>
+  <div class="contenedorFormularioSocio">
+    <table class ="table">
+        <thead>
+          <tr>
+            <th class="th">Nº Socio</th>
+            <th class="th">Apellido</th>
+            <th class="th">Nombre</th>
+            <th class="th">Socio</th>
+            <th class="th">DNI</th>
+            <th class="th">Fecha</th>
+            <th class="th">Telefono</th>
+            <th class="th">Ciudad</th>
+            <th class="th">Provincia</th>
+            <th class="th">Talla</th>
+            <th class="th">Actualizar Socios</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for socio in entity %}
+            <tr>
+              <td class="td">{{ socio.numero_socio}}</td>
+              <td class="td">{{ socio.apellido }}</td>
+              <td class="td">{{ socio.nombre }}</td>
+              {% if socio.socio is False %}
+              <td class="tdr"></td>
+              {% else %}
+              <td class="tdv"></td>
+              {% endif %}
+              <td class="td">{{ socio.dni }}</td>
+              <td class="td">{{ socio.fecha_nacimiento }}</td>
+              <td class="td">{{ socio.telefono }}</td>
+              <td class="td">{{ socio.ciudad }}</td>
+              <td class="td">{{ socio.provincia }}</td>
+              <td class="td">{{ socio.talla_camiseta }}</td>
+              <td class="td">
+              <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Actualizar Socios' socio.id %}" style="color: rgba(26, 53, 199, 1);">Actualizar Socio</a></button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button type="submit" class="btn2 btn-success" style="margin-top: -200px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:1070px;padding: 10px 15px;"><a href="{% url 'Crear Socios' %}" style="color: rgba(26, 53, 199, 1);">Registro</a></button>
+     
+{% include 'Socios/paginator.html' %}
+      
+  </div>
+  </div>
+  <div class="boIni">
+</div>
+{% endblock %}  
