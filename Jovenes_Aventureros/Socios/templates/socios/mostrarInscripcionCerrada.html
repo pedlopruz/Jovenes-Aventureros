@@ -6,6 +6,10 @@
 {% block content %}
 <p class="gestiones">Gestión de Socios</p>
   <div class="overlap-groupRegister">
+    <form action="buscar/" method="GET" style="margin-left: 850px;">
+      <input type="text" name="usern">
+      <button class="btn2 btn-success" style="background-color: #FBF707;color: rgba(26, 53, 199, 1);">Buscar Socio</button>
+  </form>
   <div class="contenedorFormularioSocio">
     <table class ="table">
         <thead>
@@ -47,6 +51,7 @@
           {% endfor %}
         </tbody>
       </table>
+      <button type="submit" class="btn2 btn-success" style="margin-top: -200px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:1070px;padding: 10px 15px;"><a href="{% url 'Crear Socios' %}" style="color: rgba(26, 53, 199, 1);">Registro</a></button>
      
 {% include 'Socios/paginator.html' %}
       

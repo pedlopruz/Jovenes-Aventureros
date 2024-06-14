@@ -1,0 +1,36 @@
+{% extends "jovenesAventureros/base.html" %}
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block content %}
+<p class="perfil">Actualizar Inscripción</p>
+  <div class="overlap-groupRegister">
+  <div class="contenedorFormularioPerfil">
+    <form method="post" action="" style="color: rgb(9, 10, 11); text-align: center; margin-top: 30px;">
+        {% csrf_token %}
+        <div style="margin-top: 50px; color: rgba(26, 53, 199, 1); font-size: 30px; display: flex; flex-direction: column; align-items: center;">
+            {% if mensaje %}
+            <div style="color: red; margin-bottom: 20px;">{{ mensaje }}</div>
+            {% endif %}
+            <div style="display: flex; justify-content: space-around;">
+                <div style="width: 45%;">
+                    {{ formulario.nombre|as_crispy_field }}
+                    {{ formulario.fecha|as_crispy_field }}
+                    {{ formulario.dificultad|as_crispy_field }}
+                    {{ formulario.precio_socio|as_crispy_field }}
+                </div>
+                <div style="width: 45%;">
+                    {{ formulario.destino|as_crispy_field }}
+                    {{ formulario.distancia|as_crispy_field }}
+                    {{ formulario.precio_no_socio|as_crispy_field }}
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success" style="margin-top: 5px; margin-bottom: 15px;background-color:rgba(26, 53, 199, 1); border-radius: 10px; color: #FBF707;">Actualizar</button>
+    </form>
+  </div>
+  </div>
+  <div class="boRE">
+</div>
+{% endblock %}  

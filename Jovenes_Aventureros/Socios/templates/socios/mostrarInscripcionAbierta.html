@@ -1,0 +1,48 @@
+{% extends "jovenesAventureros/base.html" %}
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block content %}
+<p class="gestiones">Ruta Abierta</p>
+  <div class="overlap-groupRegister">
+  <div class="contenedorFormularioSocio">
+    <table class ="table">
+        <thead>
+          <tr>
+            <th class="th">Nombre</th>
+            <th class="th">Destino</th>
+            <th class="th">Fecha</th>
+            <th class="th">Distancia</th>
+            <th class="th">Dificultad</th>
+            <th class="th">Precio Socio</th>
+            <th class="th">Precio No Socio</th>
+            <th class="th">Actualizar Socios</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ins in entity %}
+            <tr>
+              <td class="td">{{ ins.nombre }}</td>
+              <td class="td">{{ ins.destino }}</td>
+              <td class="td">{{ ins.fecha }}</td>
+              <td class="td">{{ ins.distancia }}</td>
+              <td class="td">{{ ins.dificultad }}</td>
+              <td class="td">{{ ins.precio_socio }}€</td>
+              <td class="td">{{ ins.precio_no_socio }}€</td>
+              <td class="td">
+              <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Actualizar Inscripcion' ins.id %}" style="color: rgba(26, 53, 199, 1);">Actualizar Inscripcion</a></button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button type="submit" class="btn2 btn-success" style="margin-top: 0px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:970px;padding: 10px 15px;"><a href="{% url 'Crear Inscripcion' %}" style="color: rgba(26, 53, 199, 1);">Activar Ruta</a></button>
+     
+{% include 'Socios/paginator.html' %}
+      
+  </div>
+  </div>
+  <div class="boIni">
+</div>
+{% endblock %}  

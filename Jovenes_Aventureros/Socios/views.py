@@ -126,7 +126,84 @@ def buscar(request):
         elif len(user) > 100:
             return render(request, 'Listar Socios')
         else:
-            usuario = Socios.objects.filter(Q(apellido__icontains=user)| Q(numero_socio = user))
-            return render(request, "socios/busquedaSocio.html", {"entity": usuario})
+            user = user.upper()
+            usuario = Socios.objects.filter(Q(apellido__icontains=user)| Q(numero_socio__icontains=user))
+            page = request.GET.get('page', 1)
+            try:
+                paginator = Paginator(usuario, 12)  # 6 usuarios por página
+                usuario = paginator.page(page)
+            except PageNotAnInteger:
+                raise Http404
+
+            return render(request, "socios/busquedaSocio.html", {"entity": usuario, "paginator":paginator})
     else:
         return redirect('Listar Socios')
+    
+def listar_incripciones_abiertas(request):
+    inscripciones = Inscripciones.objects.filter(finalizada = False)
+    page = request.GET.get('page', 1)  # Obtener el número de página de la solicitud GET
+    try:
+        paginator = Paginator(inscripciones, 12)  # 6 usuarios por página
+        inscripciones = paginator.page(page)
+    except PageNotAnInteger:
+            raise Http404
+
+    return render(request, 'socios/mostrarInscripcionAbierta.html', {"entity":inscripciones, "paginator":paginator})
+
+def listar_incripciones_cerradas(request):
+    inscripciones = Inscripciones.objects.filter(finalizada = True)
+    page = request.GET.get('page', 1)  # Obtener el número de página de la solicitud GET
+    try:
+        paginator = Paginator(inscripciones, 12)  # 6 usuarios por página
+        inscripciones = paginator.page(page)
+        
+    except PageNotAnInteger:
+            raise Http404
+
+    return render(request, 'socios/mostrarInscripcionCerrada.html', {"entity":inscripciones, "paginator":paginator})
+
+def actualizar_inscripcion(request, inscripcionid):
+    inscripcion = Inscripciones.objects.filter(id = inscripcionid).first()
+
+    if request.method == 'POST':
+        inscripcion_form = InscripcionForm(request.POST, instance=inscripcion)
+
+        if inscripcion_form.is_valid():
+            ins = inscripcion_form.save(commit=False)
+            ins.save()
+            return redirect('Incripciones Abiertas')
+
+    else:
+        inscripcion_form = InscripcionForm(instance=inscripcion)
+
+        return render(request, 'socios/actualizarInscripcion.html', {'formulario': inscripcion_form})
+    
+
+def crear_inscripcion(request):
+
+    if request.method == 'POST':
+        inscripcion_form = InscripcionForm(request.POST)
+
+        if inscripcion_form.is_valid():
+            nombre = inscripcion_form.cleaned_data['nombre']
+            destino = inscripcion_form.cleaned_data['destino']
+            fecha = inscripcion_form.cleaned_data['fecha']
+            distancia = inscripcion_form.cleaned_data['distancia']
+            dificultad = inscripcion_form.cleaned_data['dificultad']
+            precio_socio = inscripcion_form.cleaned_data['precio_socio']
+            precio_no_socio = inscripcion_form.cleaned_data['precio_no_socio']
+            Inscripciones.objects.create(nombre = nombre, 
+                                    destino=destino, 
+                                    fecha = fecha, 
+                                    distancia = distancia, 
+                                    dificultad=dificultad, 
+                                    precio_socio = precio_socio, 
+                                    precio_no_socio = precio_no_socio)
+            
+
+            return redirect('Incripciones Abiertas')
+    else:
+        inscripcion_form = InscripcionForm()
+
+        return render(request, 'socios/crearInscripcion.html', {'formulario': inscripcion_form})
+    
