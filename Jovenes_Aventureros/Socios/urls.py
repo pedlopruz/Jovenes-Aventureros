@@ -13,6 +13,8 @@ urlpatterns = [
     path("mostrarIncripciones/cerradas/", listar_incripciones_cerradas, name="Incripciones Cerradas"),
     path("actualizarInscripcion/<int:inscripcionid>/", actualizar_inscripcion, name="Actualizar Inscripcion"),
     path("crearInscripcion/", crear_inscripcion, name="Crear Inscripcion"),
+    path("cerrarInscripcion/", cerrar_inscripcion, name="Cerrar Inscripcion"),
+    path('mostrarIncripciones/cerradas/buscar/', buscar_inscripciones),
 
 
     

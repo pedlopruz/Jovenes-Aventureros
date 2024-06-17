@@ -98,8 +98,8 @@ def crear_Socio(request):
             else:
                 numero_socio = 0
             Socios.objects.create(numero_socio = numero_socio,
-                                    nombre = nombre, 
-                                    apellido=apellido, 
+                                    nombre = nombre.upper(), 
+                                    apellido=apellido.upper(), 
                                     dni = dni, 
                                     fecha_nacimiento = fecha_nacimiento, 
                                     telefono=telefono, 
@@ -141,6 +141,7 @@ def buscar(request):
     
 def listar_incripciones_abiertas(request):
     inscripciones = Inscripciones.objects.filter(finalizada = False)
+    total = inscripciones.count()
     page = request.GET.get('page', 1)  # Obtener el número de página de la solicitud GET
     try:
         paginator = Paginator(inscripciones, 12)  # 6 usuarios por página
@@ -148,7 +149,7 @@ def listar_incripciones_abiertas(request):
     except PageNotAnInteger:
             raise Http404
 
-    return render(request, 'socios/mostrarInscripcionAbierta.html', {"entity":inscripciones, "paginator":paginator})
+    return render(request, 'socios/mostrarInscripcionAbierta.html', {"entity":inscripciones, "paginator":paginator, "total":total})
 
 def listar_incripciones_cerradas(request):
     inscripciones = Inscripciones.objects.filter(finalizada = True)
@@ -206,4 +207,31 @@ def crear_inscripcion(request):
         inscripcion_form = InscripcionForm()
 
         return render(request, 'socios/crearInscripcion.html', {'formulario': inscripcion_form})
+    
+def cerrar_inscripcion(request):
+    inscripcion = Inscripciones.objects.filter(finalizada = False).first()
+    inscripcion.finalizada = True
+    inscripcion.save()
+    return redirect('Incripciones Abiertas')
+
+def buscar_inscripciones(request):
+    if "usern" in request.GET:
+        user = request.GET["usern"]
+        if user is None or user == "":
+            return redirect('Incripciones Cerradas')
+        elif len(user) > 100:
+            return redirect('Incripciones Cerradas')
+        else:
+            user = user.upper()
+            ins = Inscripciones.objects.filter(Q(nombre__icontains=user))
+            page = request.GET.get('page', 1)
+            try:
+                paginator = Paginator(ins, 12)  # 6 usuarios por página
+                ins = paginator.page(page)
+            except PageNotAnInteger:
+                raise Http404
+
+            return render(request, "socios/busquedaInscripcion.html", {"entity": ins, "paginator":paginator})
+    else:
+        return redirect('Incripciones Cerradas')
     
