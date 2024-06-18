@@ -64,8 +64,7 @@ def actualizar_Socio(request, socioid):
                 socio.numero_socio = total
                 socio.save()
             else:
-                total = Socios.objects.filter(socio = True).count()
-                socio.numero_socio = total
+                socio.numero_socio = 0
                 socio.save()
 
             return redirect('Listar Socios')

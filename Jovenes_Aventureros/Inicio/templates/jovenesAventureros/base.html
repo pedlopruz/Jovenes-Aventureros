@@ -17,11 +17,16 @@
 <body>
   <div class="pgina-de-inicio">
   <div class="div">
-  <a href = "{% url 'Home' %}"><img class="logo" src="{% static 'JA/img/prueba.jpg' %}"/></a>
+  <div class="pruebaf">
+    <a href = "{% url 'Home' %}"><img class="logo" src="{% static 'JA/img/cabecera1.jpg' %}"/></a>
+    <a href = "{% url 'Home' %}"><img class="logoc" src="{% static 'JA/img/cabeceraCentral.jpg' %}"/></a>
+    <a href = "{% url 'Home' %}"><img class="logof" src="{% static 'JA/img/cabeceraFinal.jpg' %}"/></a>
+
+  </div>
   {% block content %}
   {% endblock%}
   <div class="frame-3">
-  <div class="text-wrapper-3"><a href="{% url 'Listar Socios' %}" style="color: rgba(26, 53, 199, 1)">Socios</a></div>
+  <div class="text-wrapper-3"><a href="{% url 'Listar Socios' %}" style="color: rgba(26, 53, 199, 1)">Usuarios</a></div>
   <div class="text-wrapper-4"><a href="{% url 'Crear Socios' %}" style="color: rgba(26, 53, 199, 1)">Registro</a></div>
   <div class="text-wrapper-5"><a href="{% url 'Incripciones Abiertas' %}" style="color: rgba(26, 53, 199, 1)">Ruta</a></div>
   </div>

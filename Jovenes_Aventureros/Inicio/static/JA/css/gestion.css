@@ -7,7 +7,6 @@
 }
 
 .pgina-de-inicio .div {
-  background-color: #ffffff;
   width: 1440px;
   height: 1024px;
   position: relative;
@@ -66,13 +65,31 @@
 }
 .pgina-de-inicio .logo {
   position: absolute;
-  width: 467px;
-  height: 130px;
-  top: 14px;
-  left: 476px;
-  object-fit: cover;
+  width: 200px;
+  height: 142px;
+  top: 0px;
+  left: -27px;
+  bottom: 30px;
+  object-fit: contain;
 }
-
+.pgina-de-inicio .logoc {
+  position: absolute;
+  width: 500px;
+  height: 200px;
+  top: -20px;
+  left: 460px;
+  bottom: 30px;
+  object-fit: contain;
+}
+.pgina-de-inicio .logof {
+  position: absolute;
+  width: 500px;
+  height: 162px;
+  top: -20px;
+  left: 1032px;
+  bottom: 30px;
+  object-fit: contain;
+}
 .pgina-de-inicio .p {
   position: absolute;
   top: 287px;
@@ -96,7 +113,7 @@
 }
 
 .pgina-de-inicio .frame {
-  width: 586px;
+  width: 600px;
   height: 410px;
   left: 500px;
   position: absolute;
@@ -157,6 +174,17 @@
   top: 107px;
   left: 1246px;
   object-fit: cover;
+}
+
+.pgina-de-inicio .pruebaf {
+  width: 1460px;
+  height: 140px;
+  top: 2px;
+  bottom: px;
+  left: 0;
+  right: 0;
+  position: relative;
+  background-color: var(--azul);
 }
 
 .pgina-de-inicio .frame-3 {
