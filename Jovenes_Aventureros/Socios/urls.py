@@ -15,6 +15,10 @@ urlpatterns = [
     path("crearInscripcion/", crear_inscripcion, name="Crear Inscripcion"),
     path("cerrarInscripcion/", cerrar_inscripcion, name="Cerrar Inscripcion"),
     path('mostrarIncripciones/cerradas/buscar/', buscar_inscripciones),
+    path("crearInscripcionSocio/<int:socioid>/", crear_inscripcion_socio, name="Inscribir Socios"),
+    path("crearInscripcionSocioB/<int:socioid>/", crear_inscripcion_socio_b, name="Inscribir Socios B"),
+    path('mostrarInscripcionSocio/<int:insid>/', listar_inscritos, name="Usuarios Inscritos"),
+    path('mostrarInscripcionSocio/<int:insid>/buscar/', buscar_inscripciones_socios),
 
 
     

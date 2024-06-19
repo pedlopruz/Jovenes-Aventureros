@@ -1,0 +1,39 @@
+{% extends "jovenesAventureros/base.html" %}
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block content %}
+<p class="gestiones">Inscritos a {{nombre}}</p>
+  <div class="overlap-groupRegister">
+  <div class="contenedorFormularioSocio" style="margin-top: 30px;">
+    <table class ="table">
+      <thead>
+        <tr>
+          <th class="th">Nº Socio</th>
+          <th class="th">Apellido</th>
+          <th class="th">Nombre</th>
+          <th class="th">Nº Bus</th>
+          <th class="th">Nº Asiento</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ins in entity %}
+          <tr>
+            <td class="td">{{ ins.socios.numero_socio }}</td>
+            <td class="td">{{ ins.socios.apellido }}</td>
+            <td class="td">{{ ins.socios.nombre }}</td>
+            <td class="td">{{ ins.numero_bus }}</td>
+            <td class="td">{{ ins.asiento_bus }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+     
+{% include 'Socios/paginator.html' %}
+      
+  </div>
+  </div>
+  <div class="boIni">
+</div>
+{% endblock %}  

@@ -364,10 +364,41 @@
 
 
 }
+
+.pgina-de-inicio .contenedorFormularioIns{
+
+  background-color: var(--azul);
+  width: 50%;
+  margin: 80px auto;
+  border-radius: 5px;
+  padding: 1px 0px;
+
+
+
+}
 .pgina-de-inicio .boRE {
   width: 1466px;
   height: 157px;
   margin-top: calc(100% - 400px);
+  left: 0;
+  right: 0;
+  position: relative;
+  background-color: var(--azul);
+}
+
+.pgina-de-inicio .boC {
+  width: 1466px;
+  height: 157px;
+  margin-top: calc(100% - 600px);
+  left: 0;
+  right: 0;
+  position: relative;
+  background-color: var(--azul);
+}
+.pgina-de-inicio .boCc {
+  width: 1466px;
+  height: 157px;
+  margin-top: calc(100% - 700px);
   left: 0;
   right: 0;
   position: relative;
@@ -498,6 +529,18 @@
   border-radius: 5px;
   padding: 1px 0px;
   left: 200px;
+
+
+
+}
+.pgina-de-inicio .contenedorFormularioSocio{
+
+  background-color: white;
+  width: 110%;
+  border-radius: 5px;
+  padding: 1px 0px;
+  left: 150px;
+  margin-left: -50px;
 
 
 

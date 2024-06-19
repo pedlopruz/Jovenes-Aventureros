@@ -40,6 +40,9 @@ def cargarSocios(request):
 
 
 def listar_Socios(request):
+
+    inscripcion = Inscripciones.objects.filter(finalizada = False)
+    inscripcion_total = inscripcion.count()
     socios = Socios.objects.all().order_by("apellido")
     page = request.GET.get('page', 1)  # Obtener el número de página de la solicitud GET
     try:
@@ -48,7 +51,7 @@ def listar_Socios(request):
     except PageNotAnInteger:
             raise Http404
 
-    return render(request, 'socios/mostrarSocios.html', {"entity":socios, "paginator":paginator})
+    return render(request, 'socios/mostrarSocios.html', {"entity":socios, "paginator":paginator, "num_inscripcion":inscripcion_total})
 
 def actualizar_Socio(request, socioid):
     socio = Socios.objects.filter(id = socioid).first()
@@ -234,3 +237,130 @@ def buscar_inscripciones(request):
     else:
         return redirect('Incripciones Cerradas')
     
+
+
+def crear_inscripcion_socio(request, socioid):
+    mensaje = None
+    socio = Socios.objects.filter(id = socioid).first()
+    inscripcion = Inscripciones.objects.filter(finalizada = False).first()
+    if socio.socio is True:
+        precio = inscripcion.precio_socio
+    else:
+        precio = inscripcion.precio_no_socio
+    if request.method == 'POST':
+        inscripcion_form = Inscripcion_SocioForm(request.POST)
+
+        if inscripcion_form.is_valid():
+            asiento_bus = inscripcion_form.cleaned_data['asiento_bus']
+            inscripcion_socio = Inscripcion_Socio.objects.filter(inscripcion = inscripcion)
+            ocupado = any(i.asiento_bus == asiento_bus for i in inscripcion_socio)
+            repite = Inscripcion_Socio.objects.filter(inscripcion = inscripcion, socios = socio).count()
+            print(repite)
+            if repite != 0:
+                mensaje = "Usuario ya Inscripto en ruta"
+                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+            if ocupado:
+                mensaje = "Asiento ocupado"
+                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+            else:
+                if asiento_bus <= 55:
+                    numero_bus = 1
+                else:
+                    numero_bus = 2
+                Inscripcion_Socio.objects.create(inscripcion = inscripcion, 
+                                    socios = socio, 
+                                    precio = precio, 
+                                    numero_bus = numero_bus, 
+                                    asiento_bus= asiento_bus)
+            
+
+            return redirect('Listar Socios')
+    else:
+        inscripcion_form = Inscripcion_SocioForm()
+
+    return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+    
+def crear_inscripcion_socio_b(request, socioid):
+    mensaje = None
+    socio = Socios.objects.filter(id = socioid).first()
+    inscripcion = Inscripciones.objects.filter(finalizada = False).first()
+    if socio.socio is True:
+        precio = inscripcion.precio_socio
+    else:
+        precio = inscripcion.precio_no_socio
+    if request.method == 'POST':
+        inscripcion_form = Inscripcion_Socio_B_Form(request.POST)
+
+        if inscripcion_form.is_valid():
+            asiento_bus = inscripcion_form.cleaned_data['asiento_bus']
+            inscripcion_socio = Inscripcion_Socio.objects.filter(inscripcion = inscripcion)
+            ocupado = any(i.asiento_bus == asiento_bus for i in inscripcion_socio)
+            repite = Inscripcion_Socio.objects.filter(inscripcion = inscripcion, socios = socio).count()
+            print(repite)
+            if repite != 0:
+                mensaje = "Usuario ya Inscripto en ruta"
+                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+            if ocupado:
+                mensaje = "Asiento ocupado"
+                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+            elif asiento_bus <= 21:
+                mensaje = "La incripcion comienza a partir del asiento 21"
+                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+            else:
+                if asiento_bus <= 55:
+                    numero_bus = 1
+                else:
+                    numero_bus = 2
+                Inscripcion_Socio.objects.create(inscripcion = inscripcion, 
+                                    socios = socio, 
+                                    precio = precio, 
+                                    numero_bus = numero_bus, 
+                                    asiento_bus= asiento_bus)
+            
+
+            return redirect('Listar Socios')
+    else:
+        inscripcion_form = Inscripcion_Socio_B_Form()
+
+    return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+    
+
+def listar_inscritos(request, insid):
+
+    inscripcion = Inscripciones.objects.filter(id = insid).first()
+    nombre = inscripcion.nombre
+    inscripcion_socio = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("asiento_bus")
+    page = request.GET.get('page', 1)  # Obtener el número de página de la solicitud GET
+    try:
+        paginator = Paginator(inscripcion_socio, 12)  # 6 usuarios por página
+        inscripcion_socio = paginator.page(page)
+        
+    except PageNotAnInteger:
+            raise Http404
+
+    return render(request, 'socios/mostrarInscripcionSocio.html', {'entity': inscripcion_socio, "paginator":paginator, "nombre":nombre})
+
+
+def buscar_inscripciones_socios(request, insid):
+    if "usern" in request.GET:
+        user = request.GET["usern"]
+        if user is None or user == "":
+            return redirect('Usuarios Inscritos', insid)
+        elif len(user) > 100:
+            return redirect('Usuarios Inscritos', insid)
+        else:
+            user = user.upper()
+            inscripcion = Inscripciones.objects.filter(id = insid).first()
+            nombre = inscripcion.nombre
+            inscripcion_socio = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("asiento_bus")
+            ins = inscripcion_socio.filter(Q(socios__apellido__icontains=user)|Q(socios__numero_socio__icontains=user))
+            page = request.GET.get('page', 1)
+            try:
+                paginator = Paginator(ins, 12)  # 6 usuarios por página
+                ins = paginator.page(page)
+            except PageNotAnInteger:
+                raise Http404
+
+            return render(request, "socios/busquedaInscripcionSocio.html", {"entity": ins, "paginator":paginator, "nombre":nombre})
+    else:
+        return redirect('Incripciones Abiertas')

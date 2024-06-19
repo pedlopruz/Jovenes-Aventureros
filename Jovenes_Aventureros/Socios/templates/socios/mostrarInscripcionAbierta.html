@@ -4,9 +4,9 @@
 {% load static %}
 
 {% block content %}
-<p class="gestiones">Ruta Abierta</p>
+<p class="gestiones" style="margin-left: 60px;">Ruta Abierta</p>
   <div class="overlap-groupRegister">
-  <div class="contenedorFormularioSocio">
+  <div class="contenedorFormularioSocio" style="margin-top: 20px;">
     <table class ="table">
         <thead>
           <tr>
@@ -18,6 +18,7 @@
             <th class="th">Precio Socio</th>
             <th class="th">Precio No Socio</th>
             <th class="th">Actualizar Ruta</th>
+            <th class="th">Inscritos</th>
             <th class="th">Cerrar Inscripción</th>
           </tr>
         </thead>
@@ -35,8 +36,11 @@
               <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Actualizar Inscripcion' ins.id %}" style="color: rgba(26, 53, 199, 1);">Actualizar Inscripción</a></button>
               </td>
               <td class="td">
+                <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Usuarios Inscritos' ins.id %}" style="color: rgba(26, 53, 199, 1);">Inscritos</a></button>
+            </td>
+              <td class="td">
                 <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Cerrar Inscripcion' %}" style="color: rgba(26, 53, 199, 1);">Finalizar Inscripción</a></button>
-                </td>
+              </td>
             </tr>
           {% endfor %}
         </tbody>
@@ -44,13 +48,13 @@
       {% if total == 0 %}
       <button type="submit" class="btn2 btn-success" style="margin-top: 20px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:1040px;padding: 10px 15px;"><a href="{% url 'Crear Inscripcion' %}" style="color: rgba(26, 53, 199, 1);">Activar Ruta</a></button><button type="submit" class="btn2 btn-success" style="margin-top: 20px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:1040px;padding: 10px 15px;"><a href="{% url 'Incripciones Cerradas' %}" style="color: rgba(26, 53, 199, 1);">Rutas Realizadas</a></button>
       {% else %}
-      <button type="submit" class="btn2 btn-success" style="margin-top: 20px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:1040px;padding: 10px 15px;"><a href="{% url 'Incripciones Cerradas' %}" style="color: rgba(26, 53, 199, 1);">Rutas Realizadas</a></button>
+      <button type="submit" class="btn2 btn-success" style="margin-top: 20px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:1120px;padding: 10px 15px;"><a href="{% url 'Incripciones Cerradas' %}" style="color: rgba(26, 53, 199, 1);">Rutas Realizadas</a></button>
       {% endif %}
      
 {% include 'Socios/paginator.html' %}
       
   </div>
   </div>
-  <div class="boIni">
+  <div class="boCc">
 </div>
 {% endblock %}  

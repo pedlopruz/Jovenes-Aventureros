@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 
@@ -60,4 +61,14 @@ class Inscripciones(models.Model):
 
     def __str__(self):
         return f"{self.nombre}"
+    
+
+class Inscripcion_Socio(models.Model):
+    id = models.AutoField(primary_key=True)
+    inscripcion = models.ForeignKey(Inscripciones, on_delete=models.CASCADE)
+    socios = models.ForeignKey(Socios, on_delete=models.CASCADE)
+    precio = models.PositiveIntegerField(default=0)
+    numero_bus = models.PositiveIntegerField(validators=[MinValueValidator(1),MaxValueValidator(2)])
+    asiento_bus = models.PositiveIntegerField(validators=[MinValueValidator(1),MaxValueValidator(110)])
+    
 

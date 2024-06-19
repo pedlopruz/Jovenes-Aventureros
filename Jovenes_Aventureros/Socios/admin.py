@@ -4,3 +4,4 @@ from .models import *
 
 admin.site.register(Socios)
 admin.site.register(Inscripciones)
+admin.site.register(Inscripcion_Socio)
