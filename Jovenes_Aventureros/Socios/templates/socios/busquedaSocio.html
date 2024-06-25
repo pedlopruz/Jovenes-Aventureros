@@ -11,9 +11,9 @@
         <thead>
           <tr>
             <th class="th">Nº Socio</th>
+            <th class="th">Socio</th>
             <th class="th">Apellido</th>
             <th class="th">Nombre</th>
-            <th class="th">Socio</th>
             <th class="th">DNI</th>
             <th class="th">Fecha</th>
             <th class="th">Telefono</th>
@@ -30,13 +30,13 @@
           {% for socio in entity %}
             <tr>
               <td class="td">{{ socio.numero_socio}}</td>
-              <td class="td">{{ socio.apellido }}</td>
-              <td class="td">{{ socio.nombre }}</td>
               {% if socio.socio is False %}
               <td class="tdr"></td>
               {% else %}
               <td class="tdv"></td>
               {% endif %}
+              <td class="td">{{ socio.apellido }}</td>
+              <td class="td">{{ socio.nombre }}</td>
               <td class="td">{{ socio.dni }}</td>
               <td class="td">{{ socio.fecha_nacimiento }}</td>
               <td class="td">{{ socio.telefono }}</td>

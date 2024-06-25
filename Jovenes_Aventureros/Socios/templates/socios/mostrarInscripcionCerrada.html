@@ -11,7 +11,7 @@
       <button class="btn2 btn-success" style="background-color: #FBF707;color: rgba(26, 53, 199, 1);">Buscar Ruta</button>
   </form>
   <div class="contenedorFormularioSocio">
-    <table class ="table">
+    <table class ="table" style="margin-left: -60px;">
       <thead>
         <tr>
           <th class="th">Nombre</th>
@@ -19,8 +19,12 @@
           <th class="th">Fecha</th>
           <th class="th">Distancia</th>
           <th class="th">Dificultad</th>
+          <th class="th">Recaudación Socios</th>
+          <th class="th">Recaudación No Socios</th>
           <th class="th">Precio Socio</th>
           <th class="th">Precio No Socio</th>
+          <th class="th">Exportar Lista</th>
+          <th class="th">Exportar Lista</th>
         </tr>
       </thead>
       <tbody>
@@ -33,6 +37,14 @@
             <td class="td">{{ ins.dificultad }}</td>
             <td class="td">{{ ins.precio_socio }}€</td>
             <td class="td">{{ ins.precio_no_socio }}€</td>
+            <td class="td">{{ ins.recaudacion_socios }}€</td>
+            <td class="td">{{ ins.recaudacion_no_socios }}€</td>
+            <td class="td">
+              <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Exportar a PDF' ins.id%}" style="color: rgba(26, 53, 199, 1);">Exportar</a></button>
+            </td>
+            <td class="td">
+              <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Exportar a PDF V2' ins.id%}" style="color: rgba(26, 53, 199, 1);">Exportar</a></button>
+            </td>
           </tr>
         {% endfor %}
       </tbody>

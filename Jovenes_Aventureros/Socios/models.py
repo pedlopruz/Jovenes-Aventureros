@@ -58,6 +58,8 @@ class Inscripciones(models.Model):
     precio_socio = models.PositiveIntegerField()
     precio_no_socio = models.PositiveIntegerField()
     finalizada = models.BooleanField(default=False)
+    recaudacion_socios = models.PositiveIntegerField(default=0)
+    recaudacion_no_socios = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"{self.nombre}"

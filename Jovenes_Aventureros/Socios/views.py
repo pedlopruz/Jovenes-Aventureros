@@ -4,7 +4,19 @@ from .models import *
 from django.http import Http404
 from .forms import *
 from django.db.models import Q
+from datetime import datetime
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Table,
+    TableStyle,
+    Image,
+)
 from django.core.paginator import Paginator, PageNotAnInteger
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
 # Create your views here.
 
 def cargarSocios(request):
@@ -46,7 +58,7 @@ def listar_Socios(request):
     socios = Socios.objects.all().order_by("apellido")
     page = request.GET.get('page', 1)  # Obtener el número de página de la solicitud GET
     try:
-        paginator = Paginator(socios, 12)  # 6 usuarios por página
+        paginator = Paginator(socios, 10)  # 6 usuarios por página
         socios = paginator.page(page)
     except PageNotAnInteger:
             raise Http404
@@ -141,7 +153,25 @@ def buscar(request):
     else:
         return redirect('Listar Socios')
     
+def calcular_suma(request):
+    total_socios = 0
+    total_no_socios = 0
+    inscripciones = Inscripciones.objects.all()
+    for ins in inscripciones:
+        inscripciones_socio = Inscripcion_Socio.objects.filter(inscripcion = ins)
+        for inso in inscripciones_socio:
+            if inso.socios.socio is True:
+                total_socios += inso.precio
+            else:
+                total_no_socios += inso.precio
+        
+        ins.recaudacion_socios = total_socios
+        ins.recaudacion_no_socios = total_no_socios
+        ins.save()
+    return print("Todo correcto")
+    
 def listar_incripciones_abiertas(request):
+    calcular_suma(request)
     inscripciones = Inscripciones.objects.filter(finalizada = False)
     total = inscripciones.count()
     page = request.GET.get('page', 1)  # Obtener el número de página de la solicitud GET
@@ -154,6 +184,7 @@ def listar_incripciones_abiertas(request):
     return render(request, 'socios/mostrarInscripcionAbierta.html', {"entity":inscripciones, "paginator":paginator, "total":total})
 
 def listar_incripciones_cerradas(request):
+    calcular_suma(request)
     inscripciones = Inscripciones.objects.filter(finalizada = True)
     page = request.GET.get('page', 1)  # Obtener el número de página de la solicitud GET
     try:
@@ -303,7 +334,7 @@ def crear_inscripcion_socio_b(request, socioid):
             if ocupado:
                 mensaje = "Asiento ocupado"
                 return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
-            elif asiento_bus <= 21:
+            elif asiento_bus < 21:
                 mensaje = "La incripcion comienza a partir del asiento 21"
                 return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
             else:
@@ -364,3 +395,203 @@ def buscar_inscripciones_socios(request, insid):
             return render(request, "socios/busquedaInscripcionSocio.html", {"entity": ins, "paginator":paginator, "nombre":nombre})
     else:
         return redirect('Incripciones Abiertas')
+    
+
+def calcular_suma(request):
+    total_socios = 0
+    total_no_socios = 0
+    inscripciones = Inscripciones.objects.all()
+    for ins in inscripciones:
+        inscripciones_socio = Inscripcion_Socio.objects.filter(inscripcion = ins)
+        for inso in inscripciones_socio:
+            if inso.socios.socio is True:
+                total_socios += inso.precio
+            else:
+                total_no_socios += inso.precio
+        
+        ins.recaudacion_socios = total_socios
+        ins.recaudacion_no_socios = total_no_socios
+        ins.save()
+    return print("Todo correcto")
+
+
+def exportar_socios_a_Pdf(request, insid):
+    actualDate = datetime.now().date()
+    inscripcion = Inscripciones.objects.filter(id = insid).first()
+    nombre = inscripcion.nombre
+    queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion)
+    filename = "Usuarios Inscritos"
+    
+
+    # Unpack values
+    # Response Object
+    response_pdf = HttpResponse(content_type="application/pdf")
+    response_pdf["Content-Disposition"] = f"attachment; filename={filename}.pdf"
+    styles = getSampleStyleSheet()
+
+    # This is the PDF document
+    doc = SimpleDocTemplate(response_pdf, pagesize=letter)
+
+    # Create a Story list to hold elements
+    Story = []
+
+    # Add cover page elements
+    title = f"Usuarios Inscritos {nombre}"
+    actualDateText = f"Fecha actual: {actualDate}"
+
+    cover_elements = [
+        Paragraph(title, styles["Title"]),
+        Spacer(1, 12),
+        Paragraph(actualDateText, styles["Normal"]),
+        Spacer(1, 6),
+    ]
+    # Add cover elements to the Story
+    Story.extend(cover_elements)
+    # Separation for the table
+    Story.append(Spacer(1, 10))
+    table_data = [
+        [       
+            "Nº Socio",
+            "Apellido",
+            "Nombre",
+            "DNI"
+        ]
+    ]
+
+    for socio in queryset:
+        table_row = [
+            (
+                socio.socios.numero_socio
+                
+            ),
+            (
+                socio.socios.apellido
+            ),
+            (
+                socio.socios.nombre
+
+            ),
+            (
+                socio.socios.dni
+            ),
+        ]
+        table_data.append(table_row)
+
+    # Create a table
+    table = Table(
+        table_data, colWidths=[100, 100, 100, 100]
+    )  # Adjust the column width as needed
+
+    # Table style
+    table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+                ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                ("FONTSIZE", (0, 0), (-1, -1), 8),  # Adjust the font size as needed
+                ("WORDWRAP", (0, 0), (-1, -1), True),  # Allow word wrapping
+            ]
+        )
+    )
+
+    # Table to Story
+    Story.append(table)
+    doc.build(Story)
+
+    return response_pdf
+
+
+def exportar_socios_a_Pdf_v2(request, insid):
+    actualDate = datetime.now().date()
+    inscripcion = Inscripciones.objects.filter(id = insid).first()
+    nombre = inscripcion.nombre
+    queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion)
+    filename = "Usuarios Inscritos"
+    
+
+    # Unpack values
+    # Response Object
+    response_pdf = HttpResponse(content_type="application/pdf")
+    response_pdf["Content-Disposition"] = f"attachment; filename={filename}.pdf"
+    styles = getSampleStyleSheet()
+
+    # This is the PDF document
+    doc = SimpleDocTemplate(response_pdf, pagesize=letter)
+
+    # Create a Story list to hold elements
+    Story = []
+
+    # Add cover page elements
+    title = f"Usuarios Inscritos {nombre}"
+    actualDateText = f"Fecha actual: {actualDate}"
+
+    cover_elements = [
+        Paragraph(title, styles["Title"]),
+        Spacer(1, 12),
+        Paragraph(actualDateText, styles["Normal"]),
+        Spacer(1, 6),
+    ]
+    # Add cover elements to the Story
+    Story.extend(cover_elements)
+    # Separation for the table
+    Story.append(Spacer(1, 10))
+    table_data = [
+        [       
+            "Nº Socio",
+            "Apellido",
+            "Nombre",
+            "DNI"
+        ]
+    ]
+
+    for socio in queryset:
+        table_row = [
+            (
+                socio.socios.numero_socio
+                
+            ),
+            (
+                socio.socios.apellido
+            ),
+            (
+                socio.socios.nombre
+
+            ),
+            (
+                socio.socios.dni
+            ),
+        ]
+        table_data.append(table_row)
+
+    # Create a table
+    table = Table(
+        table_data, colWidths=[100, 100, 100, 100]
+    )  # Adjust the column width as needed
+
+    # Table style
+    table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+                ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                ("FONTSIZE", (0, 0), (-1, -1), 8),  # Adjust the font size as needed
+                ("WORDWRAP", (0, 0), (-1, -1), True),  # Allow word wrapping
+            ]
+        )
+    )
+
+    # Table to Story
+    Story.append(table)
+    doc.build(Story)
+
+    return response_pdf

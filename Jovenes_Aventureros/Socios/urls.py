@@ -19,6 +19,8 @@ urlpatterns = [
     path("crearInscripcionSocioB/<int:socioid>/", crear_inscripcion_socio_b, name="Inscribir Socios B"),
     path('mostrarInscripcionSocio/<int:insid>/', listar_inscritos, name="Usuarios Inscritos"),
     path('mostrarInscripcionSocio/<int:insid>/buscar/', buscar_inscripciones_socios),
+    path('exportarPDFSocio/<int:insid>', exportar_socios_a_Pdf, name="Exportar a PDF"),
+    path('exportarPDFSocioV2/<int:insid>', exportar_socios_a_Pdf_v2, name="Exportar a PDF V2"),
 
 
     

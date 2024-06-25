@@ -15,8 +15,11 @@
           <th class="th">Fecha</th>
           <th class="th">Distancia</th>
           <th class="th">Dificultad</th>
+          <th class="th">Recaudación Socios</th>
+          <th class="th">Recaudación No Socios</th>
           <th class="th">Precio Socio</th>
           <th class="th">Precio No Socio</th>
+
         </tr>
       </thead>
       <tbody>
@@ -29,6 +32,8 @@
             <td class="td">{{ ins.dificultad }}</td>
             <td class="td">{{ ins.precio_socio }}€</td>
             <td class="td">{{ ins.precio_no_socio }}€</td>
+            <td class="td">{{ ins.recaudacion_socios }}€</td>
+            <td class="td">{{ ins.recaudacion_no_socios }}€</td>
           </tr>
         {% endfor %}
       </tbody>

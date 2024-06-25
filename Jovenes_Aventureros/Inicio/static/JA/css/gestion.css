@@ -434,6 +434,17 @@
   position: relative;
   background-color: var(--azul);
 }
+
+.pgina-de-inicio .boInis {
+  width: 1466px;
+  height: 157px;
+  margin-top: calc(100% - 600px);
+  left: 0;
+  right: 0;
+  position: relative;
+  background-color: var(--azul);
+}
+
 .pgina-de-inicio .boReg {
   width: 1466px;
   height: 157px;
@@ -536,15 +547,16 @@
 .pgina-de-inicio .contenedorFormularioSocio{
 
   background-color: white;
-  width: 110%;
+  width: 120%;
   border-radius: 5px;
   padding: 1px 0px;
-  left: 150px;
+  left: 120px;
   margin-left: -50px;
 
 
 
 }
+
 
 .pgina-de-inicio .table {
 
@@ -636,7 +648,7 @@
 }
 
 .pgina-de-inicio .tdr {
-  background-color: rgb(120, 3, 14);
+  background-color: rgb(219, 7, 29);
   color: #000; /* Color marrón más oscuro para encabezados */
 }
 
