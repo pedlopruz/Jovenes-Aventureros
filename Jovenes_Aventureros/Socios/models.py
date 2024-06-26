@@ -43,6 +43,8 @@ class Socios(models.Model):
     provincia = models.CharField(max_length=35)
     socio = models.BooleanField(default=False)
     talla_camiseta = models.CharField(max_length=4, choices=TALLA, default=S)
+    regalo = models.BooleanField(default=False)
+
 
     def __str__(self):
         return f"{self.nombre}, {self.apellido}"

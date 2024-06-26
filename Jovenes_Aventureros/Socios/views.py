@@ -11,10 +11,11 @@ from reportlab.platypus import (
     Spacer,
     Table,
     TableStyle,
-    Image,
 )
+from reportlab.lib.pagesizes import A6
+from reportlab.lib.units import inch
 from django.core.paginator import Paginator, PageNotAnInteger
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 # Create your views here.
@@ -67,28 +68,50 @@ def listar_Socios(request):
 
 def actualizar_Socio(request, socioid):
     socio = Socios.objects.filter(id = socioid).first()
+    if socio.socio is True:
+        if request.method == 'POST':
+            socio_form = SocioForm(request.POST, instance=socio)
 
-    if request.method == 'POST':
-        socio_form = SocioForm(request.POST, instance=socio)
+            if socio_form.is_valid():
+                user = socio_form.save(commit=False)
+                user.save()
+                if socio_form.cleaned_data["socio"] is True:
+                    total = Socios.objects.filter(socio = True).count()
+                    socio.numero_socio = total
+                    socio.save()
+                else:
+                    socio.numero_socio = 0
+                    socio.save()
 
-        if socio_form.is_valid():
-            user = socio_form.save(commit=False)
-            user.save()
-            if socio_form.cleaned_data["socio"] is True:
-                total = Socios.objects.filter(socio = True).count()
-                socio.numero_socio = total
-                socio.save()
-            else:
-                socio.numero_socio = 0
-                socio.save()
+                return redirect('Listar Socios')
 
-            return redirect('Listar Socios')
+        else:
+            socio_form = SocioForm(instance=socio)
 
+        return render(request, 'socios/actualizarSocio.html', {'formulario': socio_form})
     else:
-        socio_form = SocioForm(instance=socio)
+        if request.method == 'POST':
+            socio_form = NoSocioForm(request.POST, instance=socio)
 
-        return render(request, 'socios/actualizarDatos.html', {'formulario': socio_form})
-    
+            if socio_form.is_valid():
+                user = socio_form.save(commit=False)
+                user.save()
+                if socio_form.cleaned_data["socio"] is True:
+                    total = Socios.objects.filter(socio = True).count()
+                    socio.numero_socio = total
+                    socio.save()
+                else:
+                    socio.numero_socio = 0
+                    socio.save()
+
+                return redirect('Listar Socios')
+
+        else:
+            socio_form = NoSocioForm(instance=socio)
+
+        return render(request, 'socios/actualizarNoSocio.html', {'formulario': socio_form})
+
+        
 
 def crear_Socio(request):
 
@@ -106,6 +129,7 @@ def crear_Socio(request):
             provincia = socio_form.cleaned_data['provincia']
             socio = socio_form.cleaned_data['socio']
             talla_camiseta = socio_form.cleaned_data['talla_camiseta']
+            regalo = socio_form.cleaned_data['regalo']
             total = Socios.objects.filter(socio = True).count()
             if socio is True:
                 numero_socio = total+1
@@ -121,7 +145,7 @@ def crear_Socio(request):
                                     ciudad = ciudad, 
                                     provincia = provincia,
                                     socio = socio,
-                                    talla_camiseta = talla_camiseta)
+                                    regalo = regalo)
             
 
             return redirect('Listar Socios')
@@ -419,7 +443,7 @@ def exportar_socios_a_Pdf(request, insid):
     actualDate = datetime.now().date()
     inscripcion = Inscripciones.objects.filter(id = insid).first()
     nombre = inscripcion.nombre
-    queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion)
+    queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("socios__apellido")
     filename = "Usuarios Inscritos"
     
 
@@ -454,7 +478,8 @@ def exportar_socios_a_Pdf(request, insid):
             "Nº Socio",
             "Apellido",
             "Nombre",
-            "DNI"
+            "Teléfono",
+            "Regalo",
         ]
     ]
 
@@ -464,6 +489,95 @@ def exportar_socios_a_Pdf(request, insid):
                 socio.socios.numero_socio
                 
             ),
+            (
+                socio.socios.apellido
+            ),
+            (
+                socio.socios.nombre
+
+            ),
+            (
+                socio.socios.telefono
+            ),
+            (
+                socio.socios.regalo
+            ),
+        ]
+        table_data.append(table_row)
+
+    # Create a table
+    table = Table(
+        table_data, colWidths=[100, 100, 100, 100]
+    )  # Adjust the column width as needed
+
+    # Table style
+    table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+                ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                ("FONTSIZE", (0, 0), (-1, -1), 8),  # Adjust the font size as needed
+                ("WORDWRAP", (0, 0), (-1, -1), True),  # Allow word wrapping
+            ]
+        )
+    )
+
+    # Table to Story
+    Story.append(table)
+    doc.build(Story)
+
+    return response_pdf
+
+
+def exportar_socios_a_Pdf_v2(request, insid):
+    actualDate = datetime.now().date()
+    inscripcion = Inscripciones.objects.filter(id = insid).first()
+    nombre = inscripcion.nombre
+    queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("-socios__apellido")
+    filename = "Usuarios Inscritos"
+    
+
+    # Unpack values
+    # Response Object
+    response_pdf = HttpResponse(content_type="application/pdf")
+    response_pdf["Content-Disposition"] = f"attachment; filename={filename}.pdf"
+    styles = getSampleStyleSheet()
+
+    # This is the PDF document
+    doc = SimpleDocTemplate(response_pdf, pagesize=letter)
+
+    # Create a Story list to hold elements
+    Story = []
+
+    # Add cover page elements
+    title = f"Usuarios Inscritos {nombre}"
+    actualDateText = f"Fecha actual: {actualDate}"
+
+    cover_elements = [
+        Paragraph(title, styles["Title"]),
+        Spacer(1, 12),
+        Paragraph(actualDateText, styles["Normal"]),
+        Spacer(1, 6),
+    ]
+    # Add cover elements to the Story
+    Story.extend(cover_elements)
+    # Separation for the table
+    Story.append(Spacer(1, 10))
+    table_data = [
+        [       
+            "Apellido",
+            "Nombre",
+            "DNI"
+        ]
+    ]
+
+    for socio in queryset:
+        table_row = [
             (
                 socio.socios.apellido
             ),
@@ -505,93 +619,57 @@ def exportar_socios_a_Pdf(request, insid):
 
     return response_pdf
 
-
-def exportar_socios_a_Pdf_v2(request, insid):
+def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
     actualDate = datetime.now().date()
-    inscripcion = Inscripciones.objects.filter(id = insid).first()
+    inscripcion = Inscripciones.objects.filter(id=insid).first()
     nombre = inscripcion.nombre
-    queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion)
-    filename = "Usuarios Inscritos"
+    socios = Inscripcion_Socio.objects.filter(inscripcion=inscripcion, socios__id = socioid)
+    filename = "Tique_Usuarios_Inscritos"
     
-
-    # Unpack values
     # Response Object
     response_pdf = HttpResponse(content_type="application/pdf")
     response_pdf["Content-Disposition"] = f"attachment; filename={filename}.pdf"
     styles = getSampleStyleSheet()
 
+    # Custom style for subtitles
+    subtitle_style = ParagraphStyle(name="Subtitle", parent=styles["Heading2"], fontSize=12, spaceAfter=6)
+
     # This is the PDF document
-    doc = SimpleDocTemplate(response_pdf, pagesize=letter)
+    doc = SimpleDocTemplate(response_pdf, pagesize=A6, rightMargin=inch/4, leftMargin=inch/4, topMargin=inch/4, bottomMargin=inch/4)
 
     # Create a Story list to hold elements
     Story = []
 
-    # Add cover page elements
-    title = f"Usuarios Inscritos {nombre}"
-    actualDateText = f"Fecha actual: {actualDate}"
+    # Add tique elements with subtitles
+    title = f"Usuarios Inscritos"
+    actualDateText = f"Fecha: {actualDate}"
 
-    cover_elements = [
+    tique_elements = [
         Paragraph(title, styles["Title"]),
         Spacer(1, 12),
+        Paragraph("Información General", subtitle_style),
         Paragraph(actualDateText, styles["Normal"]),
+        Spacer(1, 12),
+        Paragraph("Detalles de Socio", subtitle_style),
         Spacer(1, 6),
     ]
-    # Add cover elements to the Story
-    Story.extend(cover_elements)
-    # Separation for the table
-    Story.append(Spacer(1, 10))
-    table_data = [
-        [       
-            "Nº Socio",
-            "Apellido",
-            "Nombre",
-            "DNI"
+    
+    # Add tique elements to the Story
+    Story.extend(tique_elements)
+
+    # Add details of each socio
+    for socio in socios:
+        socio_details = [
+            Paragraph(f"Nº Socio: {socio.socios.numero_socio}", styles["Normal"]),
+            Paragraph(f"Apellido: {socio.socios.apellido}", styles["Normal"]),
+            Paragraph(f"Nombre: {socio.socios.nombre}", styles["Normal"]),
+            Paragraph(f"DNI: {socio.socios.dni}", styles["Normal"]),
+            Spacer(1, 6),
         ]
-    ]
+        Story.extend(socio_details)
 
-    for socio in queryset:
-        table_row = [
-            (
-                socio.socios.numero_socio
-                
-            ),
-            (
-                socio.socios.apellido
-            ),
-            (
-                socio.socios.nombre
-
-            ),
-            (
-                socio.socios.dni
-            ),
-        ]
-        table_data.append(table_row)
-
-    # Create a table
-    table = Table(
-        table_data, colWidths=[100, 100, 100, 100]
-    )  # Adjust the column width as needed
-
-    # Table style
-    table.setStyle(
-        TableStyle(
-            [
-                ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
-                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
-                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-                ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
-                ("GRID", (0, 0), (-1, -1), 1, colors.black),
-                ("FONTSIZE", (0, 0), (-1, -1), 8),  # Adjust the font size as needed
-                ("WORDWRAP", (0, 0), (-1, -1), True),  # Allow word wrapping
-            ]
-        )
-    )
-
-    # Table to Story
-    Story.append(table)
     doc.build(Story)
+
+    return response_pdf
 
     return response_pdf

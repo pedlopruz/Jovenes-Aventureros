@@ -21,6 +21,7 @@ urlpatterns = [
     path('mostrarInscripcionSocio/<int:insid>/buscar/', buscar_inscripciones_socios),
     path('exportarPDFSocio/<int:insid>', exportar_socios_a_Pdf, name="Exportar a PDF"),
     path('exportarPDFSocioV2/<int:insid>', exportar_socios_a_Pdf_v2, name="Exportar a PDF V2"),
+    path('exportarTicket/<int:insid>/<int:socioid>', exportar_tiket_socios_a_Pdf_v2, name="Exportar Ticket"),
 
 
     
