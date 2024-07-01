@@ -23,6 +23,7 @@
             <th class="th">Actualizar Socios</th>
             {% if num_inscripcion != 0 %}
             <th class="th">Pago Metálico</th>
+            <th class="th">Pago Telemático</th>
             {% endif %}
           </tr>
         </thead>
@@ -49,6 +50,9 @@
               {% if num_inscripcion != 0 %}
               <td class="td">
                 <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Inscribir Socios' socio.id %}" style="color: rgba(26, 53, 199, 1);">Inscribir a Ruta</a></button>
+              </td>
+              <td class="td">
+                <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Inscribir Socios B' socio.id %}" style="color: rgba(26, 53, 199, 1);">Inscribir a Ruta</a></button>
               </td>
               {% endif %}
             </tr>
