@@ -444,6 +444,8 @@ def calcular_suma(request):
     total_no_socios = 0
     inscripciones = Inscripciones.objects.all()
     for ins in inscripciones:
+        total_socios = 0
+        total_no_socios = 0
         inscripciones_socio = Inscripcion_Socio.objects.filter(inscripcion = ins)
         for inso in inscripciones_socio:
             if inso.socios.socio is True:
