@@ -666,6 +666,7 @@ def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
     # Custom style for subtitles
     subtitle_style = ParagraphStyle(name="Subtitle", parent=styles["Heading2"], fontSize=12, spaceAfter=-10)
     ubtitle_style = ParagraphStyle(name="Subtitle", fontSize=9)
+    
 
     # This is the PDF document
     doc = SimpleDocTemplate(response_pdf, pagesize=A4, rightMargin=inch/4, leftMargin=inch/4, topMargin=inch/4, bottomMargin=inch/4)
@@ -675,7 +676,7 @@ def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
 
     # Add tique elements with subtitles
     logoPath_pdf = "media/img/logo_t.png"
-    logo_pdf = AlignedImage(logoPath_pdf, width=250, height=70, hAlign='LEFT')
+    logo_pdf = AlignedImage(logoPath_pdf, width=200, height=70, hAlign='LEFT')
     actualDateText = f"Fecha: {actualDate}"
     for socio in socios:
         if socio.socios.socio is True:
@@ -684,34 +685,42 @@ def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
             num = ""
         tique_elements = [
             logo_pdf,
-            Paragraph(actualDateText, styles["Normal"]),
-            Paragraph("Información General", subtitle_style),
-            Paragraph(f"Ruta: {inscripcion.nombre}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Destino: {inscripcion.destino}", styles["Normal"]),
-            Paragraph(f"Distancia: {inscripcion.distancia}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dificultad: {inscripcion.dificultad}", styles["Normal"]),
+            Paragraph(f"Ruta: {inscripcion.nombre}", styles["Normal"]),
+            Spacer(1, 6),
             Paragraph(f"Fecha: {inscripcion.fecha}", styles["Normal"]),
             Spacer(1, 6),
-            Paragraph("Detalles de Socio", subtitle_style),
+            Paragraph(f"Bus: {socio.numero_bus} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asiento: {socio.asiento_bus}", styles["Normal"]),
             Spacer(1, 6),
-            Paragraph(f"Nº Socio: {num}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Apellido: {socio.socios.apellido}", styles["Normal"]),
-            Paragraph(f"Nombre: {socio.socios.nombre} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cuota: {socio.precio}€", styles["Normal"]),
-            Paragraph(f"Teléfono: {socio.socios.telefono} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DNI: {socio.socios.dni}", styles["Normal"]),
-            Paragraph(f"Bus: {socio.numero_bus} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asiento: {socio.asiento_bus}", styles["Normal"]),
+            Paragraph(f"Cuota:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{socio.precio}€", styles["Normal"]),
+            Spacer(1, 6),
+            Paragraph(f"Nº Socio: {num}", styles["Normal"]),
+            Spacer(1, 6),
+            Paragraph(f"Nombre: {socio.socios.nombre}",styles["Normal"]),
+            Spacer(1, 6),
+            Paragraph(f"Apellido: {socio.socios.apellido}", styles["Normal"]),
+            Spacer(1, 6),
+            Paragraph(f"Tfn: {socio.socios.telefono} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DNI: {socio.socios.dni}", styles["Normal"]),
             Spacer(1, 12),
             Paragraph(f"Firma: ", styles["Normal"]),
-            Spacer(1, 20),
+            Spacer(1, 40),
             Paragraph(f"__________________________________________", styles["Normal"]),
             Spacer(1, 40),
             logo_pdf,
-            Paragraph(actualDateText, styles["Normal"]),
-            Paragraph("Información General", subtitle_style),
-            Paragraph(f"Ruta: {inscripcion.nombre}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Destino: {inscripcion.destino}", styles["Normal"]),
-            Paragraph(f"Distancia: {inscripcion.distancia}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dificultad: {inscripcion.dificultad}", styles["Normal"]),
+            Paragraph(f"Ruta: {inscripcion.nombre}", styles["Normal"]),
+            Spacer(1, 6),
             Paragraph(f"Fecha: {inscripcion.fecha}", styles["Normal"]),
-            Paragraph("Detalles de Socio", subtitle_style),
-            Paragraph(f"Nº Socio: {num}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nombre: {socio.socios.nombre}", styles["Normal"]),
-            Paragraph(f"Apellido: {socio.socios.apellido} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cuota: {socio.precio} €", styles["Normal"]),
-            Paragraph(f"DNI: {socio.socios.dni} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Teléfono: {socio.socios.telefono}", styles["Normal"]),
-            Paragraph(f"Bus: {socio.numero_bus} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asiento: {socio.asiento_bus}", styles["Normal"]),
+            Spacer(1, 6),
+            Paragraph(f"Bus: {socio.numero_bus} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asiento: {socio.asiento_bus}", styles["Normal"]),
+            Spacer(1, 6), 
+            Paragraph(f"Cuota:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{socio.precio}€", styles["Normal"]),
+            Spacer(1, 6),
+            Paragraph(f"Nº Socio: {num}", styles["Normal"]),
+            Spacer(1, 6),
+            Paragraph(f"Nombre: {socio.socios.nombre}",styles["Normal"]),
+            Spacer(1, 6),
+            Paragraph(f"Apellido: {socio.socios.apellido}", styles["Normal"]),
+            Spacer(1, 6),
+            Paragraph(f"Tfn: {socio.socios.telefono} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DNI: {socio.socios.dni}", styles["Normal"]),
             Paragraph(f"Advertencia Legal", subtitle_style),
             Paragraph(
                 """El senderismo y/o montañismo son deportes inherentemente<br/>
@@ -721,10 +730,11 @@ def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
                 e inclemencia del tiempo. Su práctica conlleva la aceptación<br/>
                 de este hecho, recomendando encarecidamente estar preparados<br/>
                 para la actividad.La presente ruta es una actividad organizada<br/>
-                por lo tanto el participante se somete a la reglamentación existente<br/>
-                e indicaciones de la organización. Acepto que mi imagen pueda aparecer<br/>
-                en las fotos que se puedan compartir en los espacios virtuales, cuyo<br/>
-                propósito es la difusión de las actividades que la asociación realice""",
+                por lo tanto el participante se somete a la reglamentación <br/>
+                existente e indicaciones de la organización. Acepto que mi <br/>
+                imagen pueda aparecer en las fotos que se puedan compartir<br/>
+                en los espacios virtuales, cuyopropósito es la difusión de <br/>
+                las actividades que la asociación realice""",
                 ubtitle_style
             ),
             Paragraph(f"Firma: ", styles["Normal"]),
