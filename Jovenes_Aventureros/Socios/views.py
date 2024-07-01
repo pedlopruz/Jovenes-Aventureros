@@ -702,9 +702,10 @@ def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
             Paragraph(f"Tfn: {socio.socios.telefono} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DNI: {socio.socios.dni}", styles["Normal"]),
             Spacer(1, 12),
             Paragraph(f"Firma: ", styles["Normal"]),
-            Spacer(1, 20),
+            Spacer(1, 60),
             Paragraph(f"__________________________________________", styles["Normal"]),
             Spacer(1, 20),
+            PageBreak(),
             logo_pdf,
             Paragraph(f"Ruta: {inscripcion.nombre}", styles["Normal"]),
             Spacer(1, 6),
@@ -724,12 +725,12 @@ def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
             Paragraph(f"Advertencia Legal", subtitle_style),
             Paragraph(
                 """El senderismo y/o montañismo son deportes<br/>
-                   inherentementecon riesgos en mayor o menor<br/> 
+                   inherentemente con riesgos en mayor o menor<br/> 
                    medida,al desarrollarse en un entorno como<br/>
                    es el medio natural, y dependientes del estado<br/> 
-                   físico de cadaparticipante, además de su<br/>
+                   físico de cada participante, además de su<br/>
                    equipación, técnicas e inclemencia del tiempo.<br/>
-                   Su práctica conlleva la aceptaciónde este hecho,<br/>
+                   Su práctica conlleva la aceptación de este hecho,<br/>
                    recomendando encarecidamente estar<br/>
                    preparados para la actividad.<br/>
                    La presente ruta es una actividad<br/>
@@ -738,14 +739,11 @@ def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
                    indicaciones de la organización.<br/> 
                    Acepto que mi imagen pueda<br/>
                    aparecer en las fotos que se puedan compartir<br/>
-                   en los espacios virtuales, cuyopropósito es la<br/> 
-                   difusión delas actividades que<br/> 
+                   en los espacios virtuales, cuyo propósito es la<br/> 
+                   difusión de las actividades que<br/> 
                    la asociación realice.""",
                 ubtitle_style
             ),
-            Paragraph(f"Firma: ", styles["Normal"]),
-            Spacer(1, 12),
-            Paragraph(f"__________________________________________", styles["Normal"]),
         ]
 
     # Add tique elements to the Story
