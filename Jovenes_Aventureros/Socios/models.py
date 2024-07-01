@@ -53,9 +53,9 @@ class Socios(models.Model):
 class Inscripciones(models.Model):
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=30)
-    destino = models.CharField(max_length=30, blank=True)
-    fecha = models.CharField(max_length=16, blank=True)
-    distancia = models.IntegerField(blank=True, null=True)
+    destino = models.CharField(max_length=30, blank=False)
+    fecha = models.CharField(max_length=16, blank=False)
+    distancia = models.IntegerField(default=0)
     dificultad = models.CharField(max_length=20, choices=DIFICULTAD, default=BAJA)
     precio_socio = models.PositiveIntegerField()
     precio_no_socio = models.PositiveIntegerField()

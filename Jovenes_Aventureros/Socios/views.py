@@ -11,13 +11,17 @@ from reportlab.platypus import (
     Spacer,
     Table,
     TableStyle,
+    Image
 )
 from reportlab.lib.pagesizes import A6
 from reportlab.lib.units import inch
 from django.core.paginator import Paginator, PageNotAnInteger
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import letter, A6, A4
+from django.http import HttpResponse
+from datetime import datetime
+from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame, NextPageTemplate, PageBreak, Flowable
 # Create your views here.
 
 def cargarSocios(request):
@@ -68,6 +72,8 @@ def listar_Socios(request):
 
 def actualizar_Socio(request, socioid):
     socio = Socios.objects.filter(id = socioid).first()
+    socio_b = socio.socio
+    num = socio.numero_socio
     if socio.socio is True:
         if request.method == 'POST':
             socio_form = SocioForm(request.POST, instance=socio)
@@ -75,12 +81,18 @@ def actualizar_Socio(request, socioid):
             if socio_form.is_valid():
                 user = socio_form.save(commit=False)
                 user.save()
-                if socio_form.cleaned_data["socio"] is True:
+                if socio_form.cleaned_data["socio"] is False and socio_b is False:
+                    socio.numero_socio = 0
+                    socio.save()
+                elif socio_form.cleaned_data["socio"] is False and socio_b is True:
+                    socio.numero_socio = 0
+                    socio.save()
+                elif socio_form.cleaned_data["socio"] is True and socio_b is False:
                     total = Socios.objects.filter(socio = True).count()
                     socio.numero_socio = total
                     socio.save()
                 else:
-                    socio.numero_socio = 0
+                    socio.numero_socio = num
                     socio.save()
 
                 return redirect('Listar Socios')
@@ -96,12 +108,18 @@ def actualizar_Socio(request, socioid):
             if socio_form.is_valid():
                 user = socio_form.save(commit=False)
                 user.save()
-                if socio_form.cleaned_data["socio"] is True:
+                if socio_form.cleaned_data["socio"] is False and socio_b is False:
+                    socio.numero_socio = 0
+                    socio.save()
+                elif socio_form.cleaned_data["socio"] is False and socio_b is True:
+                    socio.numero_socio = 0
+                    socio.save()
+                elif socio_form.cleaned_data["socio"] is True and socio_b is False:
                     total = Socios.objects.filter(socio = True).count()
                     socio.numero_socio = total
                     socio.save()
                 else:
-                    socio.numero_socio = 0
+                    socio.numero_socio = num
                     socio.save()
 
                 return redirect('Listar Socios')
@@ -444,7 +462,7 @@ def exportar_socios_a_Pdf(request, insid):
     inscripcion = Inscripciones.objects.filter(id = insid).first()
     nombre = inscripcion.nombre
     queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("socios__apellido")
-    filename = "Usuarios Inscritos"
+    filename = f"Lista Bus {nombre}"
     
 
     # Unpack values
@@ -475,34 +493,26 @@ def exportar_socios_a_Pdf(request, insid):
     Story.append(Spacer(1, 10))
     table_data = [
         [       
-            "Nº Socio",
+
             "Apellido",
             "Nombre",
             "Teléfono",
+            "Nº Bus",
+            "Asiento",
             "Regalo",
         ]
     ]
 
     for socio in queryset:
-        table_row = [
-            (
-                socio.socios.numero_socio
-                
-            ),
-            (
-                socio.socios.apellido
-            ),
-            (
-                socio.socios.nombre
 
-            ),
-            (
-                socio.socios.telefono
-            ),
-            (
-                socio.socios.regalo
-            ),
-        ]
+        table_row = [
+        socio.socios.apellido,
+        socio.socios.nombre,
+        socio.socios.telefono,
+        socio.numero_bus,
+        socio.asiento_bus,
+        socio.socios.regalo,
+    ]
         table_data.append(table_row)
 
     # Create a table
@@ -511,8 +521,7 @@ def exportar_socios_a_Pdf(request, insid):
     )  # Adjust the column width as needed
 
     # Table style
-    table.setStyle(
-        TableStyle(
+    table_style = TableStyle(
             [
                 ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
                 ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
@@ -524,8 +533,19 @@ def exportar_socios_a_Pdf(request, insid):
                 ("FONTSIZE", (0, 0), (-1, -1), 8),  # Adjust the font size as needed
                 ("WORDWRAP", (0, 0), (-1, -1), True),  # Allow word wrapping
             ]
-        )
     )
+    for i, row in enumerate(table_data[1:], start=1):  # Comenzar desde la segunda fila (índice 1)
+        if row[5]:  # Si "Regalo" es True
+            bg_color = colors.green
+            text_color = colors.green
+        else:  # Si "Regalo" es False
+            bg_color = colors.red
+            text_color = colors.red
+        table_style.add("BACKGROUND", (5, i), (5, i), bg_color)
+        table_style.add("TEXTCOLOR", (5, i), (5, i), text_color)
+
+    table.setStyle(table_style)
+    
 
     # Table to Story
     Story.append(table)
@@ -539,7 +559,7 @@ def exportar_socios_a_Pdf_v2(request, insid):
     inscripcion = Inscripciones.objects.filter(id = insid).first()
     nombre = inscripcion.nombre
     queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("-socios__apellido")
-    filename = "Usuarios Inscritos"
+    filename = f"Lista Seguro {nombre}"
     
 
     # Unpack values
@@ -619,57 +639,102 @@ def exportar_socios_a_Pdf_v2(request, insid):
 
     return response_pdf
 
+class AlignedImage(Flowable):
+    def __init__(self, img_path, width, height, hAlign='LEFT'):
+        Flowable.__init__(self)
+        self.img_path = img_path
+        self.width = width
+        self.height = height
+        self.hAlign = hAlign
+
+    def draw(self):
+        img = Image(self.img_path, width=self.width, height=self.height)
+        img.drawOn(self.canv, 0, 0)
+
 def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
     actualDate = datetime.now().date()
     inscripcion = Inscripciones.objects.filter(id=insid).first()
     nombre = inscripcion.nombre
-    socios = Inscripcion_Socio.objects.filter(inscripcion=inscripcion, socios__id = socioid)
-    filename = "Tique_Usuarios_Inscritos"
-    
+    socios = Inscripcion_Socio.objects.filter(inscripcion=inscripcion, socios__id=socioid)
+    filename = f"tique {nombre}"
+
     # Response Object
     response_pdf = HttpResponse(content_type="application/pdf")
     response_pdf["Content-Disposition"] = f"attachment; filename={filename}.pdf"
     styles = getSampleStyleSheet()
 
     # Custom style for subtitles
-    subtitle_style = ParagraphStyle(name="Subtitle", parent=styles["Heading2"], fontSize=12, spaceAfter=6)
+    subtitle_style = ParagraphStyle(name="Subtitle", parent=styles["Heading2"], fontSize=12, spaceAfter=-10)
+    ubtitle_style = ParagraphStyle(name="Subtitle", fontSize=9)
 
     # This is the PDF document
-    doc = SimpleDocTemplate(response_pdf, pagesize=A6, rightMargin=inch/4, leftMargin=inch/4, topMargin=inch/4, bottomMargin=inch/4)
+    doc = SimpleDocTemplate(response_pdf, pagesize=A4, rightMargin=inch/4, leftMargin=inch/4, topMargin=inch/4, bottomMargin=inch/4)
 
     # Create a Story list to hold elements
     Story = []
 
     # Add tique elements with subtitles
-    title = f"Usuarios Inscritos"
+    logoPath_pdf = "media/img/logo_t.png"
+    logo_pdf = AlignedImage(logoPath_pdf, width=250, height=70, hAlign='LEFT')
     actualDateText = f"Fecha: {actualDate}"
+    for socio in socios:
+        if socio.socios.socio is True:
+            num = socio.socios.numero_socio
+        else:
+            num = ""
+        tique_elements = [
+            logo_pdf,
+            Paragraph(actualDateText, styles["Normal"]),
+            Paragraph("Información General", subtitle_style),
+            Paragraph(f"Ruta: {inscripcion.nombre}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Destino: {inscripcion.destino}", styles["Normal"]),
+            Paragraph(f"Distancia: {inscripcion.distancia}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dificultad: {inscripcion.dificultad}", styles["Normal"]),
+            Paragraph(f"Fecha: {inscripcion.fecha}", styles["Normal"]),
+            Spacer(1, 6),
+            Paragraph("Detalles de Socio", subtitle_style),
+            Spacer(1, 6),
+            Paragraph(f"Nº Socio: {num}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Apellido: {socio.socios.apellido}", styles["Normal"]),
+            Paragraph(f"Nombre: {socio.socios.nombre} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cuota: {socio.precio}€", styles["Normal"]),
+            Paragraph(f"Teléfono: {socio.socios.telefono} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DNI: {socio.socios.dni}", styles["Normal"]),
+            Paragraph(f"Bus: {socio.numero_bus} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asiento: {socio.asiento_bus}", styles["Normal"]),
+            Spacer(1, 12),
+            Paragraph(f"Firma: ", styles["Normal"]),
+            Spacer(1, 20),
+            Paragraph(f"__________________________________________", styles["Normal"]),
+            Spacer(1, 40),
+            logo_pdf,
+            Paragraph(actualDateText, styles["Normal"]),
+            Paragraph("Información General", subtitle_style),
+            Paragraph(f"Ruta: {inscripcion.nombre}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Destino: {inscripcion.destino}", styles["Normal"]),
+            Paragraph(f"Distancia: {inscripcion.distancia}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dificultad: {inscripcion.dificultad}", styles["Normal"]),
+            Paragraph(f"Fecha: {inscripcion.fecha}", styles["Normal"]),
+            Paragraph("Detalles de Socio", subtitle_style),
+            Paragraph(f"Nº Socio: {num}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nombre: {socio.socios.nombre}", styles["Normal"]),
+            Paragraph(f"Apellido: {socio.socios.apellido} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cuota: {socio.precio} €", styles["Normal"]),
+            Paragraph(f"DNI: {socio.socios.dni} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Teléfono: {socio.socios.telefono}", styles["Normal"]),
+            Paragraph(f"Bus: {socio.numero_bus} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asiento: {socio.asiento_bus}", styles["Normal"]),
+            Paragraph(f"Advertencia Legal", subtitle_style),
+            Paragraph(
+                """El senderismo y/o montañismo son deportes inherentemente<br/>
+                con riesgos en mayor o menor medida,al desarrollarse en un<br/>
+                entorno como es el medio natural, y dependientes del estado<br/> 
+                físico de cadaparticipante, además de su equipación, técnicas<br/>
+                e inclemencia del tiempo. Su práctica conlleva la aceptación<br/>
+                de este hecho, recomendando encarecidamente estar preparados<br/>
+                para la actividad.La presente ruta es una actividad organizada<br/>
+                por lo tanto el participante se somete a la reglamentación existente<br/>
+                e indicaciones de la organización. Acepto que mi imagen pueda aparecer<br/>
+                en las fotos que se puedan compartir en los espacios virtuales, cuyo<br/>
+                propósito es la difusión de las actividades que la asociación realice""",
+                ubtitle_style
+            ),
+            Paragraph(f"Firma: ", styles["Normal"]),
+            Spacer(1, 20),
+            Paragraph(f"__________________________________________", styles["Normal"]),
+        ]
 
-    tique_elements = [
-        Paragraph(title, styles["Title"]),
-        Spacer(1, 12),
-        Paragraph("Información General", subtitle_style),
-        Paragraph(actualDateText, styles["Normal"]),
-        Spacer(1, 12),
-        Paragraph("Detalles de Socio", subtitle_style),
-        Spacer(1, 6),
-    ]
-    
     # Add tique elements to the Story
     Story.extend(tique_elements)
 
-    # Add details of each socio
-    for socio in socios:
-        socio_details = [
-            Paragraph(f"Nº Socio: {socio.socios.numero_socio}", styles["Normal"]),
-            Paragraph(f"Apellido: {socio.socios.apellido}", styles["Normal"]),
-            Paragraph(f"Nombre: {socio.socios.nombre}", styles["Normal"]),
-            Paragraph(f"DNI: {socio.socios.dni}", styles["Normal"]),
-            Spacer(1, 6),
-        ]
-        Story.extend(socio_details)
-
     doc.build(Story)
-
-    return response_pdf
 
     return response_pdf
