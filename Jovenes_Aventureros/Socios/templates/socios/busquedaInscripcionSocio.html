@@ -4,20 +4,19 @@
 {% load static %}
 
 {% block content %}
-<p class="gestiones">Inscritos a {{nombre}}</p>
   <div class="overlap-groupRegister">
-  <div class="contenedorFormularioSocio" style="margin-top: 30px;">
-    <table class ="table" style="margin-left: -65px;">
+    <p class="gestiones" style="font-size: 25px; margin-left: -660px; margin-top: -340px;">Ruta "{{nombre}}"</p>
+  <div class="contenedorFormularioSocio">
+    <table class ="table" style="margin-left: -70px; margin-top: 0px;">
       <thead>
         <tr>
           <th class="th">Nº Socio</th>
           <th class="th">Socio</th>
-          <th class="th">Apellido</th>
+          <th class="th">Apellidos</th>
           <th class="th">Nombre</th>
           <th class="th">Nº Bus</th>
           <th class="th">Nº Asiento</th>
           <th class="th">Ticket</th>
-          
         </tr>
       </thead>
       <tbody>
@@ -29,7 +28,7 @@
               {% else %}
               <td class="tdv"></td>
               {% endif %}
-            <td class="td">{{ ins.socios.apellido }}</td>
+            <td class="td">{{ ins.socios.apellidos }}</td>
             <td class="td">{{ ins.socios.nombre }}</td>
             <td class="td">{{ ins.numero_bus }}</td>
             <td class="td">{{ ins.asiento_bus }}</td>

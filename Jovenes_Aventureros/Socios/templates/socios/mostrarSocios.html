@@ -4,19 +4,19 @@
 {% load static %}
 
 {% block content %}
-<p class="gestiones">Gestión de Socios</p>
   <div class="overlap-groupRegister">
-    <form action="buscar/" method="GET" style="margin-left: 850px;">
+    <p class="gestiones" style="font-size: 25px; margin-left: -660px; margin-top: -340px;">Gestión de Socios</p>
+    <form action="buscar/" method="GET" style="margin-left: 850px; margin-top: -30px;margin-bottom: 20px;">
       <input type="text" name="usern">
       <button class="btn2 btn-success" style="background-color: #FBF707;color: rgba(26, 53, 199, 1);">Buscar Socio</button>
   </form>
   <div class="contenedorFormularioSocio">
-    <table class ="table" style="margin-left: -70px;">
+    <table class ="table" style="margin-left: -70px; margin-top: 0px;">
         <thead>
           <tr>
             <th class="th">Nº Socio</th>
             <th class="th">Socio</th>
-            <th class="th">Apellido</th>
+            <th class="th">Apellidos</th>
             <th class="th">Nombre</th>
             <th class="th">DNI</th>
             <th class="th">Fecha</th>
@@ -41,7 +41,7 @@
               {% else %}
               <td class="tdv"></td>
               {% endif %}
-              <td class="td">{{ socio.apellido }}</td>
+              <td class="td">{{ socio.apellidos }}</td>
               <td class="td">{{ socio.nombre }}</td>
               <td class="td">{{ socio.dni }}</td>
               <td class="td">{{ socio.fecha_nacimiento }}</td>

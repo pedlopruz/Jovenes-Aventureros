@@ -4,66 +4,73 @@
 {% load static %}
 
 {% block content %}
-<p class="gestiones">Gestión de Socios</p>
   <div class="overlap-groupRegister">
-  <div class="contenedorFormularioSocio" style="margin-top: 20px;">
-    <table class ="table" style="margin-left: -65px;">
-        <thead>
-          <tr>
-            <th class="th">Nº Socio</th>
-            <th class="th">Socio</th>
-            <th class="th">Apellido</th>
-            <th class="th">Nombre</th>
-            <th class="th">DNI</th>
-            <th class="th">Fecha</th>
-            <th class="th">Telefono</th>
-            <th class="th">Ciudad</th>
-            <th class="th">Provincia</th>
-            <th class="th">Talla</th>
-            <th class="th">Actualizar Socios</th>
-            {% if num_inscripcion != 0 %}
-            <th class="th">Pago Metálico</th>
-            <th class="th">Pago Telemático</th>
-            {% endif %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for socio in entity %}
+    <p class="gestiones" style="font-size: 25px; margin-left: -660px; margin-top: -345px;">Gestión de Socios</p>
+    <div class="contenedorFormularioSocio">
+      <table class ="table" style="margin-left: -70px; margin-top: 0px;">
+          <thead>
             <tr>
-              <td class="td">{{ socio.numero_socio}}</td>
-              {% if socio.socio is False %}
-              <td class="tdr"></td>
-              {% else %}
-              <td class="tdv"></td>
-              {% endif %}
-              <td class="td">{{ socio.apellido }}</td>
-              <td class="td">{{ socio.nombre }}</td>
-              <td class="td">{{ socio.dni }}</td>
-              <td class="td">{{ socio.fecha_nacimiento }}</td>
-              <td class="td">{{ socio.telefono }}</td>
-              <td class="td">{{ socio.ciudad }}</td>
-              <td class="td">{{ socio.provincia }}</td>
-              <td class="td">{{ socio.talla_camiseta }}</td>
-              <td class="td">
-              <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Actualizar Socios' socio.id %}" style="color: rgba(26, 53, 199, 1);">Actualizar Socio</a></button>
-              </td>
+              <th class="th">Nº Socio</th>
+              <th class="th">Socio</th>
+              <th class="th">Apellidos</th>
+              <th class="th">Nombre</th>
+              <th class="th">DNI</th>
+              <th class="th">Fecha</th>
+              <th class="th">Telefono</th>
+              <th class="th">Ciudad</th>
+              <th class="th">Provincia</th>
+              <th class="th">Talla</th>
+              <th class="th">Regalo</th>
+              <th class="th">Actualizar Socios</th>
               {% if num_inscripcion != 0 %}
-              <td class="td">
-                <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Inscribir Socios' socio.id %}" style="color: rgba(26, 53, 199, 1);">Inscribir a Ruta</a></button>
-              </td>
-              <td class="td">
-                <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Inscribir Socios B' socio.id %}" style="color: rgba(26, 53, 199, 1);">Inscribir a Ruta</a></button>
-              </td>
+              <th class="th">Pago Metálico</th>
+              <th class="th">Pago Telemático</th>
               {% endif %}
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-     
-{% include 'Socios/paginator.html' %}
-      
+          </thead>
+          <tbody>
+            {% for socio in entity %}
+              <tr>
+                <td class="td">{{ socio.numero_socio}}</td>
+                {% if socio.socio is False %}
+                <td class="tdr"></td>
+                {% else %}
+                <td class="tdv"></td>
+                {% endif %}
+                <td class="td">{{ socio.apellidos }}</td>
+                <td class="td">{{ socio.nombre }}</td>
+                <td class="td">{{ socio.dni }}</td>
+                <td class="td">{{ socio.fecha_nacimiento }}</td>
+                <td class="td">{{ socio.telefono }}</td>
+                <td class="td">{{ socio.ciudad }}</td>
+                <td class="td">{{ socio.provincia }}</td>
+                <td class="td">{{ socio.talla_camiseta }}</td>
+                {% if socio.regalo is False %}
+                <td class="tdr" style="color: aliceblue;">N</td>
+                {% else %}
+                <td class="tdv" style="color: aliceblue;">S</td>
+                {% endif %}
+                <td class="td">
+                <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Actualizar Socios' socio.id %}" style="color: rgba(26, 53, 199, 1);">Actualizar Socio</a></button>
+                </td>
+                {% if num_inscripcion != 0 %}
+                <td class="td">
+                  <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Inscribir Socios' socio.id %}" style="color: rgba(26, 53, 199, 1);">Inscribir a Ruta</a></button>
+                </td>
+                <td class="td">
+                  <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Inscribir Socios B' socio.id %}" style="color: rgba(26, 53, 199, 1);">Inscribir a Ruta</a></button>
+                </td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <button type="submit" class="btn2 btn-success" style="margin-top: -120px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:575px;padding: 10px 15px;"><a href="{% url 'Crear Socios' %}" style="color: rgba(26, 53, 199, 1);">Inscribir Socio</a></button>
+       
+  {% include 'Socios/paginator.html' %}
+        
+    </div>
+    </div>
+    <div class="boInis">
   </div>
-  </div>
-  <div class="boIni">
-</div>
 {% endblock %}  

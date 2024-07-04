@@ -34,7 +34,7 @@ class Socios(models.Model):
     id = models.AutoField(primary_key=True)
     numero_socio = models.IntegerField(default=0)
     nombre = models.CharField(max_length=30)
-    apellido = models.CharField(max_length=50)
+    apellidos = models.CharField(max_length=50)
     dni = models.CharField(max_length=20)
     fecha_nacimiento = models.CharField(max_length=16)
     telefono = models.CharField(max_length=20)

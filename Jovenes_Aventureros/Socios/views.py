@@ -31,7 +31,7 @@ def cargarSocios(request):
         lector_csv = csv.DictReader(csvfile, delimiter=';')
         for numero_fila, fila in enumerate(lector_csv, start=1):
             try:
-                apellido = fila['Apellido']
+                apellidos = fila['apellidos']
                 nombre = fila['Nombre']
                 dni = fila['DNI']
                 fecha = fila['Fecha']
@@ -40,7 +40,7 @@ def cargarSocios(request):
                 ciudad = fila['Ciudad']
                 provincia = fila['Provincia']
                 Socios.objects.create(nombre = nombre, 
-                                      apellido=apellido, 
+                                      apellidos=apellidos, 
                                       dni = dni, 
                                       fecha_nacimiento = fecha, 
                                       telefono=telefono, 
@@ -60,7 +60,7 @@ def listar_Socios(request):
 
     inscripcion = Inscripciones.objects.filter(finalizada = False)
     inscripcion_total = inscripcion.count()
-    socios = Socios.objects.all().order_by("apellido")
+    socios = Socios.objects.all().order_by("apellidos")
     page = request.GET.get('page', 1)  # Obtener el número de página de la solicitud GET
     try:
         paginator = Paginator(socios, 10)  # 6 usuarios por página
@@ -79,8 +79,6 @@ def actualizar_Socio(request, socioid):
             socio_form = SocioForm(request.POST, instance=socio)
 
             if socio_form.is_valid():
-                user = socio_form.save(commit=False)
-                user.save()
                 if socio_form.cleaned_data["socio"] is False and socio_b is False:
                     socio.numero_socio = 0
                     socio.save()
@@ -88,12 +86,23 @@ def actualizar_Socio(request, socioid):
                     socio.numero_socio = 0
                     socio.save()
                 elif socio_form.cleaned_data["socio"] is True and socio_b is False:
-                    total = Socios.objects.filter(socio = True).count()
+                    total = 0
+                    for i in range(1,300):
+                        aparece_socio = Socios.objects.filter(socio = True, numero_socio= i)
+                        if aparece_socio:
+                            pass
+                        else:
+                            total = i
+                            break
+
+
                     socio.numero_socio = total
                     socio.save()
                 else:
                     socio.numero_socio = num
                     socio.save()
+
+                socio_form.save()
 
                 return redirect('Listar Socios')
 
@@ -106,8 +115,6 @@ def actualizar_Socio(request, socioid):
             socio_form = NoSocioForm(request.POST, instance=socio)
 
             if socio_form.is_valid():
-                user = socio_form.save(commit=False)
-                user.save()
                 if socio_form.cleaned_data["socio"] is False and socio_b is False:
                     socio.numero_socio = 0
                     socio.save()
@@ -115,12 +122,23 @@ def actualizar_Socio(request, socioid):
                     socio.numero_socio = 0
                     socio.save()
                 elif socio_form.cleaned_data["socio"] is True and socio_b is False:
-                    total = Socios.objects.filter(socio = True).count()
+                    total = 0
+                    for i in range(1,300):
+                        aparece_socio = Socios.objects.filter(socio = True, numero_socio= i)
+                        if aparece_socio:
+                            pass
+                        else:
+                            total = i
+                            break
+
+
                     socio.numero_socio = total
                     socio.save()
                 else:
                     socio.numero_socio = num
                     socio.save()
+
+                socio_form.save()
 
                 return redirect('Listar Socios')
 
@@ -138,7 +156,7 @@ def crear_Socio(request):
 
         if socio_form.is_valid():
             nombre = socio_form.cleaned_data['nombre']
-            apellido = socio_form.cleaned_data['apellido']
+            apellidos = socio_form.cleaned_data['apellidos']
             dni = socio_form.cleaned_data['dni']
             fecha_nacimiento = socio_form.cleaned_data['fecha_nacimiento']
             telefono = socio_form.cleaned_data['telefono']
@@ -155,7 +173,7 @@ def crear_Socio(request):
                 numero_socio = 0
             Socios.objects.create(numero_socio = numero_socio,
                                     nombre = nombre.upper(), 
-                                    apellido=apellido.upper(), 
+                                    apellidos=apellidos.upper(), 
                                     dni = dni, 
                                     fecha_nacimiento = fecha_nacimiento, 
                                     telefono=telefono, 
@@ -183,10 +201,10 @@ def buscar(request):
             return render(request, 'Listar Socios')
         else:
             user = user.upper()
-            usuario = Socios.objects.filter(Q(apellido__icontains=user)| Q(numero_socio__icontains=user))
+            usuario = Socios.objects.filter(Q(apellidos__icontains=user)| Q(numero_socio__icontains=user))
             page = request.GET.get('page', 1)
             try:
-                paginator = Paginator(usuario, 12)  # 6 usuarios por página
+                paginator = Paginator(usuario, 10)  # 6 usuarios por página
                 usuario = paginator.page(page)
             except PageNotAnInteger:
                 raise Http404
@@ -347,7 +365,8 @@ def crear_inscripcion_socio(request, socioid):
                                     asiento_bus= asiento_bus)
             
 
-            return redirect('Listar Socios')
+            return redirect('Exportar Ticket V2',inscripcion.id,socioid)
+            
     else:
         inscripcion_form = Inscripcion_SocioForm()
 
@@ -405,7 +424,7 @@ def listar_inscritos(request, insid):
     inscripcion_socio = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("asiento_bus")
     page = request.GET.get('page', 1)  # Obtener el número de página de la solicitud GET
     try:
-        paginator = Paginator(inscripcion_socio, 12)  # 6 usuarios por página
+        paginator = Paginator(inscripcion_socio, 25)  # 6 usuarios por página
         inscripcion_socio = paginator.page(page)
         
     except PageNotAnInteger:
@@ -426,7 +445,7 @@ def buscar_inscripciones_socios(request, insid):
             inscripcion = Inscripciones.objects.filter(id = insid).first()
             nombre = inscripcion.nombre
             inscripcion_socio = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("asiento_bus")
-            ins = inscripcion_socio.filter(Q(socios__apellido__icontains=user)|Q(socios__numero_socio__icontains=user))
+            ins = inscripcion_socio.filter(Q(socios__apellidos__icontains=user)|Q(socios__numero_socio__icontains=user))
             page = request.GET.get('page', 1)
             try:
                 paginator = Paginator(ins, 12)  # 6 usuarios por página
@@ -463,7 +482,7 @@ def exportar_socios_a_Pdf(request, insid):
     actualDate = datetime.now().date()
     inscripcion = Inscripciones.objects.filter(id = insid).first()
     nombre = inscripcion.nombre
-    queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("socios__apellido")
+    queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("socios__apellidos")
     filename = f"Lista Bus {nombre}"
     
 
@@ -496,7 +515,7 @@ def exportar_socios_a_Pdf(request, insid):
     table_data = [
         [       
 
-            "Apellido",
+            "apellidos",
             "Nombre",
             "Teléfono",
             "Nº Bus",
@@ -508,7 +527,7 @@ def exportar_socios_a_Pdf(request, insid):
     for socio in queryset:
 
         table_row = [
-        socio.socios.apellido,
+        socio.socios.apellidos,
         socio.socios.nombre,
         socio.socios.telefono,
         socio.numero_bus,
@@ -560,7 +579,7 @@ def exportar_socios_a_Pdf_v2(request, insid):
     actualDate = datetime.now().date()
     inscripcion = Inscripciones.objects.filter(id = insid).first()
     nombre = inscripcion.nombre
-    queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("-socios__apellido")
+    queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("-socios__apellidos")
     filename = f"Lista Seguro {nombre}"
     
 
@@ -592,7 +611,7 @@ def exportar_socios_a_Pdf_v2(request, insid):
     Story.append(Spacer(1, 10))
     table_data = [
         [       
-            "Apellido",
+            "apellidos",
             "Nombre",
             "DNI"
         ]
@@ -601,7 +620,7 @@ def exportar_socios_a_Pdf_v2(request, insid):
     for socio in queryset:
         table_row = [
             (
-                socio.socios.apellido
+                socio.socios.apellidos
             ),
             (
                 socio.socios.nombre
@@ -699,7 +718,7 @@ def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
             Spacer(1, 6),
             Paragraph(f"Nombre: {socio.socios.nombre}",styles["Normal"]),
             Spacer(1, 6),
-            Paragraph(f"Apellido: {socio.socios.apellido}", styles["Normal"]),
+            Paragraph(f"apellidos: {socio.socios.apellidos}", styles["Normal"]),
             Spacer(1, 6),
             Paragraph(f"Tfn: {socio.socios.telefono} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DNI: {socio.socios.dni}", styles["Normal"]),
             Spacer(1, 12),
@@ -721,7 +740,7 @@ def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
             Spacer(1, 6),
             Paragraph(f"Nombre: {socio.socios.nombre}",styles["Normal"]),
             Spacer(1, 6),
-            Paragraph(f"Apellido: {socio.socios.apellido}", styles["Normal"]),
+            Paragraph(f"apellidos: {socio.socios.apellidos}", styles["Normal"]),
             Spacer(1, 6),
             Paragraph(f"Tfn: {socio.socios.telefono} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DNI: {socio.socios.dni}", styles["Normal"]),
             Paragraph(f"Advertencia Legal", subtitle_style),

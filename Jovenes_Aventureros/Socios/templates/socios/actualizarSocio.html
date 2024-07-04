@@ -4,34 +4,37 @@
 {% load static %}
 
 {% block content %}
-<p class="perfil">Actualizar Usuario</p>
+<p class="gestiones" style="font-size: 35px; margin-top: -25px;margin-left: 100px;">Socio</p>
   <div class="overlap-groupRegister">
-  <div class="contenedorFormularioPerfil">
+  <div class="contenedorFormularioPerfil" style="width: 70%; margin-top: -2px;">
     <form method="post" action="" style="color: rgb(9, 10, 11); text-align: center; margin-top: 30px;">
         {% csrf_token %}
         <div style="margin-top: 50px; color: rgba(26, 53, 199, 1); font-size: 30px; display: flex; flex-direction: column; align-items: center;">
             {% if mensaje %}
             <div style="color: red; margin-bottom: 20px;">{{ mensaje }}</div>
             {% endif %}
-            <div style="display: flex; justify-content: space-around;">
+            <div style="display: flex; justify-content: space-around; width: 90%;">
                 <div style="width: 45%;">
                     {{ formulario.nombre|as_crispy_field }}
                     {{ formulario.dni|as_crispy_field }}
-                    {{ formulario.telefono|as_crispy_field }}
                     {{ formulario.ciudad|as_crispy_field }}
                     {{ formulario.talla_camiseta|as_crispy_field }}
                 </div>
                 <div style="width: 45%;">
-                    {{ formulario.apellido|as_crispy_field }}
-                    {{ formulario.fecha_nacimiento|as_crispy_field }}
+                    <br><br>
+                    <div style="margin-top: 17px;">{{ formulario.fecha_nacimiento|as_crispy_field }}
+                    {{ formulario.provincia|as_crispy_field }}</div>
+                    <div style="margin-top: 60px;">Socio &nbsp;{{ formulario.socio}}</div>
+                </div>
+                <div style="width: 45%;">
+                    {{formulario.apellidos|as_crispy_field }}
+                    {{ formulario.telefono|as_crispy_field }}
                     {{ formulario.codigo_postal|as_crispy_field }}
-                    {{ formulario.provincia|as_crispy_field }}
-                    {{ formulario.socio|as_crispy_field }}
-                    {{ formulario.regalo|as_crispy_field }}
+                    <div style="margin-top: 60px;">Regalo &nbsp;{{ formulario.regalo}}</div>
                 </div>
             </div>
         </div>
-        <button type="submit" class="btn btn-success" style="margin-top: 5px; margin-bottom: 15px;background-color:rgba(26, 53, 199, 1); border-radius: 10px; color: #FBF707;">Actualizar Socio</button>
+        <button type="submit" class="btn btn-success" style="margin-top: -5px; margin-bottom: 15px;background-color:rgba(26, 53, 199, 1); border-radius: 10px; color: #FBF707; width: 90%;font-size: 20px;">Registro</button>
     </form>
   </div>
   </div>

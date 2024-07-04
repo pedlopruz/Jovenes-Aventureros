@@ -65,28 +65,28 @@
 }
 .pgina-de-inicio .logo {
   position: absolute;
-  width: 200px;
-  height: 142px;
-  top: 0px;
-  left: -27px;
+  width: 400px;
+  height: 260px;
+  top: -133px;
+  left: -90px;
   bottom: 30px;
   object-fit: contain;
 }
 .pgina-de-inicio .logoc {
   position: absolute;
-  width: 500px;
-  height: 200px;
-  top: -20px;
-  left: 460px;
+  width: 700px;
+  height: 400px;
+  top: -230px;
+  left: 295px;
   bottom: 30px;
   object-fit: contain;
 }
 .pgina-de-inicio .logof {
   position: absolute;
   width: 500px;
-  height: 162px;
-  top: -20px;
-  left: 1032px;
+  height: 140px;
+  top: -100px;
+  left: 1000px;
   bottom: 30px;
   object-fit: contain;
 }
@@ -1075,4 +1075,8 @@
   border-radius: 5px;
   padding: 10px 0; 
 }
-
+.small-input {
+  width: 100px; /* Ajusta este valor según tus necesidades */
+  padding: 5px;  /* Ajusta el padding según tus necesidades */
+  font-size: 14px; /* Ajusta el tamaño de la fuente si es necesario */
+}

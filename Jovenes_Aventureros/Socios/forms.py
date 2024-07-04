@@ -5,13 +5,13 @@ class SocioForm(forms.ModelForm):
     
     class Meta:
         model = Socios
-        fields = ['nombre', 'apellido','dni', 'fecha_nacimiento', 'telefono', 'codigo_postal','ciudad', 'provincia', 'socio', 'talla_camiseta', 'regalo']
+        fields = ['nombre', 'apellidos','dni', 'fecha_nacimiento', 'telefono', 'codigo_postal','ciudad', 'provincia', 'socio', 'talla_camiseta', 'regalo']
 
 class NoSocioForm(forms.ModelForm):
     
     class Meta:
         model = Socios
-        fields = ['nombre', 'apellido','dni', 'fecha_nacimiento', 'telefono', 'codigo_postal','ciudad', 'provincia', 'socio', 'talla_camiseta']
+        fields = ['nombre', 'apellidos','dni', 'fecha_nacimiento', 'telefono', 'codigo_postal','ciudad', 'provincia', 'socio', 'talla_camiseta']
 
 class InscripcionForm(forms.ModelForm):
     
