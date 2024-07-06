@@ -435,6 +435,16 @@
   background-color: var(--azul);
 }
 
+.pgina-de-inicio .boInsSo {
+  width: 1466px;
+  height: 157px;
+  margin-top: calc(100% - 600px);
+  left: 0;
+  right: 0;
+  position: relative;
+  background-color: var(--azul);
+}
+
 .pgina-de-inicio .boInis {
   width: 1466px;
   height: 157px;

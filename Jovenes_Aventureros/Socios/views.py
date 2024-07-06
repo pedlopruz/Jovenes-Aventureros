@@ -422,15 +422,7 @@ def listar_inscritos(request, insid):
     inscripcion = Inscripciones.objects.filter(id = insid).first()
     nombre = inscripcion.nombre
     inscripcion_socio = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("asiento_bus")
-    page = request.GET.get('page', 1)  # Obtener el número de página de la solicitud GET
-    try:
-        paginator = Paginator(inscripcion_socio, 25)  # 6 usuarios por página
-        inscripcion_socio = paginator.page(page)
-        
-    except PageNotAnInteger:
-            raise Http404
-
-    return render(request, 'socios/mostrarInscripcionSocio.html', {'entity': inscripcion_socio, "paginator":paginator, "nombre":nombre})
+    return render(request, 'socios/mostrarInscripcionSocio.html', {'entity': inscripcion_socio, "nombre":nombre})
 
 
 def buscar_inscripciones_socios(request, insid):
@@ -773,3 +765,28 @@ def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
     doc.build(Story)
 
     return response_pdf
+
+def eliminar_de_inscripcion(request, insid, socioid):
+    entity = Inscripcion_Socio.objects.filter(inscripcion__id = insid, socios__id= socioid).first()
+    entity.delete()
+    return redirect('Usuarios Inscritos', insid)
+
+def mostrar_socios_socios(request):
+    entity = Socios.objects.filter(socio = True).order_by("numero_socio")
+    return render(request, "socios/mostrarSocioSocio.html", {"entity":entity})
+
+def buscar_socios_socios(request):
+    if "usern" in request.GET:
+        user = request.GET["usern"]
+        if user is None or user == "":
+            return redirect('Mostrar Usuarios Socios')
+        elif len(user) > 100:
+            return render(request, 'Mostrar Usuarios Socios')
+        else:
+            user = user.upper()
+            usuario = Socios.objects.filter(Q(numero_socio=user),socio = True)
+            return render(request, "socios/busquedaSocioSocio.html", {"entity": usuario})
+    else:
+        return redirect('Mostrar Usuarios Socios')
+
+    

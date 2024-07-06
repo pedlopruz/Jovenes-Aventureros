@@ -22,7 +22,9 @@ urlpatterns = [
     path('exportarPDFSocio/<int:insid>', exportar_socios_a_Pdf, name="Exportar a PDF"),
     path('exportarPDFSocioV2/<int:insid>', exportar_socios_a_Pdf_v2, name="Exportar a PDF V2"),
     path('exportarTicketV2/<int:insid>/<int:socioid>', exportar_tiket_socios_a_Pdf_v2, name="Exportar Ticket V2"),
-
+    path('eliminarInscrito/<int:insid>/<int:socioid>', eliminar_de_inscripcion, name="Eliminar Socio Inscripcion"),
+    path('mostrarUsuariosSocios', mostrar_socios_socios, name="Mostrar Usuarios Socios"),
+    path('mostrarUsuariosSocios/buscar/', buscar_socios_socios),
 
     
 

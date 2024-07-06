@@ -5,7 +5,7 @@
 
 {% block content %}
   <div class="overlap-groupRegister">
-    <p class="gestiones" style="font-size: 25px; margin-left: -660px; margin-top: -345px;">Gestión de Socios</p>
+    <p class="gestiones" style="font-size: 25px; margin-left: -660px; margin-top: -345px;">Usuarios Socios</p>
     <div class="contenedorFormularioSocio">
       <table class ="table" style="margin-left: -70px; margin-top: 0px;">
           <thead>
@@ -46,9 +46,9 @@
                 <td class="td">{{ socio.provincia }}</td>
                 <td class="td">{{ socio.talla_camiseta }}</td>
                 {% if socio.regalo is False %}
-                <td class="tdr" style="color: aliceblue;">N</td>
+                <td class="tdr" style="color: aliceblue;"></td>
                 {% else %}
-                <td class="tdv" style="color: aliceblue;">S</td>
+                <td class="tdv" style="color: aliceblue;"></td>
                 {% endif %}
                 <td class="td">
                 <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Actualizar Socios' socio.id %}" style="color: rgba(26, 53, 199, 1);">Actualizar Socio</a></button>
@@ -65,12 +65,8 @@
             {% endfor %}
           </tbody>
         </table>
-        
        
-  {% include 'Socios/paginator.html' %}
         
     </div>
     </div>
-    <div class="boInis">
-  </div>
 {% endblock %}  
