@@ -950,7 +950,7 @@
 }
 .pgina-de-inicio .tdd {
   border: 1px solid white;
-  padding: 20px;
+  padding: -50px;
   text-align: center;
   color: #000;
 }
@@ -1089,4 +1089,11 @@
   width: 100px; /* Ajusta este valor según tus necesidades */
   padding: 5px;  /* Ajusta el padding según tus necesidades */
   font-size: 14px; /* Ajusta el tamaño de la fuente si es necesario */
+}
+.bigger-input {
+    transform: scale(1.5); /* Ajusta este valor para hacer el checkbox más grande o más pequeño */
+    -webkit-transform: scale(1.5); /* Necesario para compatibilidad con Safari */
+    -moz-transform: scale(1.5); /* Necesario para compatibilidad con Firefox */
+    -o-transform: scale(1.5); /* Necesario para compatibilidad con Opera */
+    margin: 10px; /* Ajusta el margen si es necesario */
 }

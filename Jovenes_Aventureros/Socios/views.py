@@ -31,7 +31,7 @@ def cargarSocios(request):
         lector_csv = csv.DictReader(csvfile, delimiter=';')
         for numero_fila, fila in enumerate(lector_csv, start=1):
             try:
-                apellidos = fila['apellidos']
+                apellidos = fila['Apellido']
                 nombre = fila['Nombre']
                 dni = fila['DNI']
                 fecha = fila['Fecha']
@@ -61,14 +61,8 @@ def listar_Socios(request):
     inscripcion = Inscripciones.objects.filter(finalizada = False)
     inscripcion_total = inscripcion.count()
     socios = Socios.objects.all().order_by("apellidos")
-    page = request.GET.get('page', 1)  # Obtener el número de página de la solicitud GET
-    try:
-        paginator = Paginator(socios, 10)  # 6 usuarios por página
-        socios = paginator.page(page)
-    except PageNotAnInteger:
-            raise Http404
 
-    return render(request, 'socios/mostrarSocios.html', {"entity":socios, "paginator":paginator, "num_inscripcion":inscripcion_total})
+    return render(request, 'socios/mostrarSocios.html', {"entity":socios, "num_inscripcion":inscripcion_total})
 
 def actualizar_Socio(request, socioid):
     socio = Socios.objects.filter(id = socioid).first()
@@ -79,32 +73,18 @@ def actualizar_Socio(request, socioid):
             socio_form = SocioForm(request.POST, instance=socio)
 
             if socio_form.is_valid():
-                if socio_form.cleaned_data["socio"] is False and socio_b is False:
-                    socio.numero_socio = 0
-                    socio.save()
-                elif socio_form.cleaned_data["socio"] is False and socio_b is True:
-                    socio.numero_socio = 0
-                    socio.save()
-                elif socio_form.cleaned_data["socio"] is True and socio_b is False:
-                    total = 0
-                    for i in range(1,300):
-                        aparece_socio = Socios.objects.filter(socio = True, numero_socio= i)
-                        if aparece_socio:
-                            pass
-                        else:
-                            total = i
-                            break
-
-
-                    socio.numero_socio = total
-                    socio.save()
-                else:
-                    socio.numero_socio = num
-                    socio.save()
-
                 socio_form.save()
+                socio.nombre = socio.nombre.upper()
+                socio.apellidos = socio.apellidos.upper()
+                socio.save()
+                if socio.socio is False:
+                    socio.numero_socio = 0
+                    socio.save()
 
-                return redirect('Listar Socios')
+                if socio.socio is True:
+                    return redirect('Mostrar Usuarios Socios')
+                else:
+                    return redirect('Listar Socios')
 
         else:
             socio_form = SocioForm(instance=socio)
@@ -139,8 +119,14 @@ def actualizar_Socio(request, socioid):
                     socio.save()
 
                 socio_form.save()
+                socio.nombre = socio.nombre.upper()
+                socio.apellidos = socio.apellidos.upper()
+                socio.save()
 
-                return redirect('Listar Socios')
+                if socio.socio is True:
+                    return redirect('Mostrar Usuarios Socios')
+                else:
+                    return redirect('Listar Socios')
 
         else:
             socio_form = NoSocioForm(instance=socio)
@@ -202,21 +188,14 @@ def buscar(request):
         else:
             user = user.upper()
             usuario = Socios.objects.filter(Q(apellidos__icontains=user)| Q(numero_socio__icontains=user))
-            page = request.GET.get('page', 1)
-            try:
-                paginator = Paginator(usuario, 10)  # 6 usuarios por página
-                usuario = paginator.page(page)
-            except PageNotAnInteger:
-                raise Http404
-
-            return render(request, "socios/busquedaSocio.html", {"entity": usuario, "paginator":paginator})
+            return render(request, "socios/busquedaSocio.html", {"entity": usuario})
     else:
         return redirect('Listar Socios')
     
 def calcular_suma(request):
     total_socios = 0
     total_no_socios = 0
-    inscripciones = Inscripciones.objects.all()
+    inscripciones = Inscripciones.objects.filter(finalizada = False)
     for ins in inscripciones:
         inscripciones_socio = Inscripcion_Socio.objects.filter(inscripcion = ins)
         for inso in inscripciones_socio:
@@ -449,25 +428,6 @@ def buscar_inscripciones_socios(request, insid):
     else:
         return redirect('Incripciones Abiertas')
     
-
-def calcular_suma(request):
-    total_socios = 0
-    total_no_socios = 0
-    inscripciones = Inscripciones.objects.all()
-    for ins in inscripciones:
-        total_socios = 0
-        total_no_socios = 0
-        inscripciones_socio = Inscripcion_Socio.objects.filter(inscripcion = ins)
-        for inso in inscripciones_socio:
-            if inso.socios.socio is True:
-                total_socios += inso.precio
-            else:
-                total_no_socios += inso.precio
-        
-        ins.recaudacion_socios = total_socios
-        ins.recaudacion_no_socios = total_no_socios
-        ins.save()
-    return print("Todo correcto")
 
 
 def exportar_socios_a_Pdf(request, insid):
@@ -773,7 +733,9 @@ def eliminar_de_inscripcion(request, insid, socioid):
 
 def mostrar_socios_socios(request):
     entity = Socios.objects.filter(socio = True).order_by("numero_socio")
-    return render(request, "socios/mostrarSocioSocio.html", {"entity":entity})
+    inscripcion = Inscripciones.objects.filter(finalizada = False)
+    inscripcion_total = inscripcion.count()
+    return render(request, "socios/mostrarSocioSocio.html", {"entity":entity,"num_inscripcion":inscripcion_total})
 
 def buscar_socios_socios(request):
     if "usern" in request.GET:
@@ -789,4 +751,12 @@ def buscar_socios_socios(request):
     else:
         return redirect('Mostrar Usuarios Socios')
 
-    
+def reestablecer_usuarios(request):
+    entity = Socios.objects.all()
+    for i in entity:
+        i.numero_socio = 0
+        i.socio = False
+        i.regalo = False
+        i.save()
+
+    return redirect("Listar Socios")

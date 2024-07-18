@@ -5,7 +5,7 @@ class SocioForm(forms.ModelForm):
     
     class Meta:
         model = Socios
-        fields = ['nombre', 'apellidos','dni', 'fecha_nacimiento', 'telefono', 'codigo_postal','ciudad', 'provincia', 'socio', 'talla_camiseta', 'regalo']
+        fields = ['numero_socio','nombre', 'apellidos','dni', 'fecha_nacimiento', 'telefono', 'codigo_postal','ciudad', 'provincia', 'socio', 'talla_camiseta', 'regalo']
 
 class NoSocioForm(forms.ModelForm):
     

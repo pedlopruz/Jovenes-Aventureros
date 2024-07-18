@@ -4,30 +4,34 @@
 {% load static %}
 
 {% block content %}
-<p class="perfil">Nueva Inscripción</p>
+<p class="gestiones" style="font-size: 35px; margin-top: -25px;margin-left: 100px;">Nueva Ruta</p>
   <div class="overlap-groupRegister">
-  <div class="contenedorFormularioPerfil">
+  <div class="contenedorFormularioPerfil" style="width: 70%; margin-top: -2px;">
     <form method="post" action="" style="color: rgb(9, 10, 11); text-align: center; margin-top: 30px;">
         {% csrf_token %}
         <div style="margin-top: 50px; color: rgba(26, 53, 199, 1); font-size: 30px; display: flex; flex-direction: column; align-items: center;">
             {% if mensaje %}
             <div style="color: red; margin-bottom: 20px;">{{ mensaje }}</div>
             {% endif %}
-            <div style="display: flex; justify-content: space-around;">
+            <div style="display: flex; justify-content: space-around; width: 90%;">
                 <div style="width: 45%;">
                     {{ formulario.nombre|as_crispy_field }}
-                    {{ formulario.fecha|as_crispy_field }}
-                    {{ formulario.dificultad|as_crispy_field }}
+                    {{ formulario.distancia|as_crispy_field }}
                     {{ formulario.precio_socio|as_crispy_field }}
                 </div>
                 <div style="width: 45%;">
                     {{ formulario.destino|as_crispy_field }}
-                    {{ formulario.distancia|as_crispy_field }}
+                    <br><br>
+                    <br><br>
+                </div>
+                <div style="width: 45%;">
+                    {{formulario.fecha|as_crispy_field }}
+                    {{ formulario.dificultad|as_crispy_field }}
                     {{ formulario.precio_no_socio|as_crispy_field }}
                 </div>
             </div>
         </div>
-        <button type="submit" class="btn btn-success" style="margin-top: 5px; margin-bottom: 15px;background-color:rgba(26, 53, 199, 1); border-radius: 10px; color: #FBF707;">Registro</button>
+        <button type="submit" class="btn btn-success" style="margin-top: -5px; margin-bottom: 15px;background-color:rgba(26, 53, 199, 1); border-radius: 10px; color: #FBF707; width: 90%;font-size: 20px;">Registro</button>
     </form>
   </div>
   </div>
