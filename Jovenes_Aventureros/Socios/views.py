@@ -78,6 +78,7 @@ def actualizar_Socio(request, socioid):
                 socio.apellidos = socio.apellidos.upper()
                 socio.save()
                 if socio.socio is False:
+                    socio.regalo = False
                     socio.numero_socio = 0
                     socio.save()
 
@@ -100,6 +101,7 @@ def actualizar_Socio(request, socioid):
                     socio.save()
                 elif socio_form.cleaned_data["socio"] is False and socio_b is True:
                     socio.numero_socio = 0
+                    socio.regalo = False
                     socio.save()
                 elif socio_form.cleaned_data["socio"] is True and socio_b is False:
                     total = 0
@@ -138,7 +140,7 @@ def actualizar_Socio(request, socioid):
 def crear_Socio(request):
 
     if request.method == 'POST':
-        socio_form = SocioForm(request.POST)
+        socio_form = NoSocioForm(request.POST)
 
         if socio_form.is_valid():
             nombre = socio_form.cleaned_data['nombre']
@@ -151,10 +153,16 @@ def crear_Socio(request):
             provincia = socio_form.cleaned_data['provincia']
             socio = socio_form.cleaned_data['socio']
             talla_camiseta = socio_form.cleaned_data['talla_camiseta']
-            regalo = socio_form.cleaned_data['regalo']
-            total = Socios.objects.filter(socio = True).count()
             if socio is True:
-                numero_socio = total+1
+                total = 0
+                for i in range(1,300):
+                    aparece_socio = Socios.objects.filter(socio = True, numero_socio= i)
+                    if aparece_socio:
+                        pass
+                    else:
+                        total = i
+                        break
+                numero_socio = total
             else:
                 numero_socio = 0
             Socios.objects.create(numero_socio = numero_socio,
@@ -166,14 +174,13 @@ def crear_Socio(request):
                                     codigo_postal = codigo_postal, 
                                     ciudad = ciudad, 
                                     provincia = provincia,
-                                    socio = socio,
-                                    regalo = regalo)
+                                    socio = socio)
             
 
             return redirect('Listar Socios')
 
     else:
-        socio_form = SocioForm()
+        socio_form = NoSocioForm()
 
         return render(request, 'socios/añadirSocios.html', {'formulario': socio_form})
     
@@ -187,7 +194,7 @@ def buscar(request):
             return render(request, 'Listar Socios')
         else:
             user = user.upper()
-            usuario = Socios.objects.filter(Q(apellidos__icontains=user)| Q(numero_socio__icontains=user))
+            usuario = Socios.objects.filter(Q(apellidos__icontains=user)| Q(numero_socio__icontains=user)).order_by("apellidos")
             return render(request, "socios/busquedaSocio.html", {"entity": usuario})
     else:
         return redirect('Listar Socios')
@@ -746,7 +753,7 @@ def buscar_socios_socios(request):
             return render(request, 'Mostrar Usuarios Socios')
         else:
             user = user.upper()
-            usuario = Socios.objects.filter(Q(numero_socio=user),socio = True)
+            usuario = Socios.objects.filter(Q(apellidos__icontains=user)| Q(numero_socio__icontains=user),socio = True).order_by("numero_socio")
             return render(request, "socios/busquedaSocioSocio.html", {"entity": usuario})
     else:
         return redirect('Mostrar Usuarios Socios')

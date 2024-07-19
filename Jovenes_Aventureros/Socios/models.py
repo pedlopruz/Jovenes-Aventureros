@@ -47,7 +47,7 @@ class Socios(models.Model):
 
 
     def __str__(self):
-        return f"{self.nombre}, {self.apellido}"
+        return f"{self.nombre}, {self.apellidos}"
     
 
 class Inscripciones(models.Model):

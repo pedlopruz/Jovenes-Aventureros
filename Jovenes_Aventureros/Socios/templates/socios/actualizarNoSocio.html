@@ -1,6 +1,6 @@
 {% extends "jovenesAventureros/base.html" %}
 {% load crispy_forms_tags %}
-
+{% load widget_tweaks %}
 {% load static %}
 
 {% block content %}
@@ -29,7 +29,7 @@
                     {{formulario.apellidos|as_crispy_field }}
                     {{ formulario.telefono|as_crispy_field }}
                     {{ formulario.codigo_postal|as_crispy_field }}
-                    <div style="margin-top: 30px;">Socio &nbsp;{{ formulario.socio}}</div>
+                    <div style="margin-top: 30px;">Socio &nbsp;{{ formulario.socio|add_class:"bigger-input"}}</div>
                 </div>
             </div>
         </div>
