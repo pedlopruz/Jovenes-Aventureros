@@ -194,7 +194,7 @@ def buscar(request):
             return render(request, 'Listar Socios')
         else:
             user = user.upper()
-            usuario = Socios.objects.filter(Q(apellidos__icontains=user)| Q(numero_socio__icontains=user)).order_by("apellidos")
+            usuario = Socios.objects.filter(Q(apellidos__icontains=user)| Q(numero_socio__icontains=user)).order_by("numero_socio")
             return render(request, "socios/busquedaSocio.html", {"entity": usuario})
     else:
         return redirect('Listar Socios')
@@ -211,7 +211,8 @@ def calcular_suma(request):
             else:
                 total_no_socios += inso.precio
         
-        ins.recaudacion_socios = total_socios
+        descuento = inscripciones.first().precio_socio * 2
+        ins.recaudacion_socios = total_socios - descuento
         ins.recaudacion_no_socios = total_no_socios
         ins.save()
     return print("Todo correcto")
@@ -318,6 +319,10 @@ def buscar_inscripciones(request):
 
 def crear_inscripcion_socio(request, socioid):
     mensaje = None
+    aparece_socio = Inscripcion_Socio.objects.order_by("-asiento_bus").first()
+    total = aparece_socio.asiento_bus + 1
+
+
     socio = Socios.objects.filter(id = socioid).first()
     inscripcion = Inscripciones.objects.filter(finalizada = False).first()
     if socio.socio is True:
@@ -351,15 +356,17 @@ def crear_inscripcion_socio(request, socioid):
                                     asiento_bus= asiento_bus)
             
 
-            return redirect('Exportar Ticket V2',inscripcion.id,socioid)
+            return redirect('Usuarios Inscritos',inscripcion.id)
             
     else:
         inscripcion_form = Inscripcion_SocioForm()
 
-    return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+    return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total})
     
 def crear_inscripcion_socio_b(request, socioid):
     mensaje = None
+    aparece_socio = Inscripcion_Socio.objects.order_by("-asiento_bus").first()
+    total = aparece_socio.asiento_bus + 1
     socio = Socios.objects.filter(id = socioid).first()
     inscripcion = Inscripciones.objects.filter(finalizada = False).first()
     if socio.socio is True:
@@ -396,11 +403,11 @@ def crear_inscripcion_socio_b(request, socioid):
                                     asiento_bus= asiento_bus)
             
 
-            return redirect('Listar Socios')
+            return redirect('Usuarios Inscritos',inscripcion.id)
     else:
         inscripcion_form = Inscripcion_Socio_B_Form()
 
-    return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+    return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total})
     
 
 def listar_inscritos(request, insid):
