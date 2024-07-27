@@ -19,6 +19,8 @@
           <th class="th">Precio No Socio</th>
           <th class="th">Recaudación Socios</th>
           <th class="th">Recaudación No Socios</th>
+          <th class="th">Pago Metálico</th>
+          <th class="th">Pago Banco</th>
           <th class="th">Inscritos</th>
           <th class="th">Lista Bus</th>
           <th class="th">Lista Seguro</th>
@@ -36,6 +38,8 @@
             <td class="td">{{ ins.precio_no_socio }}€</td>
             <td class="td">{{ ins.recaudacion_socios }}€</td>
             <td class="td">{{ ins.recaudacion_no_socios }}€</td>
+            <td class="td">{{ ins.pago_metalico }}</td>
+            <td class="td">{{ ins.pago_banco }}</td>
             <td class="td">
               <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Usuarios Inscritos' ins.id %}" style="color: rgba(26, 53, 199, 1);">Inscritos</a></button>
           </td>

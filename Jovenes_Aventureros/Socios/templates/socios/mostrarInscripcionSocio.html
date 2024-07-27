@@ -16,6 +16,7 @@
         <tr>
           <th class="th">Nº Socio</th>
           <th class="th">Socio</th>
+          <th class="th">P/B</th>
           <th class="th">Apellidos</th>
           <th class="th">Nombre</th>
           <th class="th">Nº Bus</th>
@@ -30,6 +31,11 @@
             <td class="td">{{ ins.socios.numero_socio }}</td>
             {% if ins.socios.socio is False %}
               <td class="tdr"></td>
+              {% else %}
+              <td class="tdv"></td>
+              {% endif %}
+            {% if ins.pago is False %}
+              <td class="tdb"></td>
               {% else %}
               <td class="tdv"></td>
               {% endif %}

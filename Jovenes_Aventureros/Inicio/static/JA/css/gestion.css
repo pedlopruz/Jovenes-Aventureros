@@ -662,6 +662,12 @@
   color: #000; /* Color marrón más oscuro para encabezados */
 }
 
+.pgina-de-inicio .tdb {
+  background-color:  rgb(16, 181, 223);;
+  color: white /* Color marrón más oscuro para encabezados */
+}
+
+
 .pgina-de-inicio .tde {
   background-color: rgb(213, 215, 215);
   color: #000; /* Color marrón más oscuro para encabezados */

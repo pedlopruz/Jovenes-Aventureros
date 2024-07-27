@@ -20,11 +20,16 @@ class InscripcionForm(forms.ModelForm):
         model = Inscripciones
         fields = ['nombre', 'destino','fecha', 'distancia', 'dificultad', 'precio_socio','precio_no_socio']
 
+class InscripcionFormA(forms.ModelForm):
+    
+    class Meta:
+        model = Inscripciones
+        fields = ['nombre', 'destino','fecha', 'distancia', 'dificultad']
+
 class Inscripcion_SocioForm(forms.Form):
 
     asiento_bus = forms.IntegerField(label="Seleccione asiento:",validators=[MinValueValidator(1),MaxValueValidator(110)])
+    guia = forms.BooleanField(label = "Guía", required= False)
 
-class Inscripcion_Socio_B_Form(forms.Form):
 
-    asiento_bus = forms.IntegerField(label="Seleccione asiento:",validators=[MinValueValidator(21),MaxValueValidator(110)])
 

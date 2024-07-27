@@ -202,24 +202,36 @@ def buscar(request):
 def calcular_suma(request):
     total_socios = 0
     total_no_socios = 0
+    total_metalico = 0
+    total_banco = 0
     inscripciones = Inscripciones.objects.filter(finalizada = False)
-    for ins in inscripciones:
-        inscripciones_socio = Inscripcion_Socio.objects.filter(inscripcion = ins)
-        for inso in inscripciones_socio:
-            if inso.socios.socio is True:
-                total_socios += inso.precio
-            else:
-                total_no_socios += inso.precio
-        
-        descuento = inscripciones.first().precio_socio * 2
-        ins.recaudacion_socios = total_socios - descuento
-        ins.recaudacion_no_socios = total_no_socios
-        ins.save()
+    if inscripciones:
+        for ins in inscripciones:
+            inscripciones_socio = Inscripcion_Socio.objects.filter(inscripcion = ins)
+            for inso in inscripciones_socio:
+                if inso.socios.socio is True:
+                    total_socios += inso.precio
+                else:
+                    total_no_socios += inso.precio
+
+                if inso.pago is True:
+                    total_metalico += 1
+                else:
+                    total_banco += 1
+
+            
+            ins.recaudacion_socios = total_socios 
+            ins.recaudacion_no_socios = total_no_socios
+            ins.pago_metalico = total_metalico
+            ins.pago_banco = total_banco
+            ins.save()
+
     return print("Todo correcto")
     
 def listar_incripciones_abiertas(request):
-    calcular_suma(request)
     inscripciones = Inscripciones.objects.filter(finalizada = False)
+    if inscripciones:
+        calcular_suma(request)
     total = inscripciones.count()
     page = request.GET.get('page', 1)  # Obtener el número de página de la solicitud GET
     try:
@@ -247,15 +259,15 @@ def actualizar_inscripcion(request, inscripcionid):
     inscripcion = Inscripciones.objects.filter(id = inscripcionid).first()
 
     if request.method == 'POST':
-        inscripcion_form = InscripcionForm(request.POST, instance=inscripcion)
+        inscripcion_form = InscripcionFormA(request.POST, instance=inscripcion)
 
         if inscripcion_form.is_valid():
-            ins = inscripcion_form.save(commit=False)
-            ins.save()
-            return redirect('Incripciones Abiertas')
+            inscripcion_form.save()
+
+        return redirect('Incripciones Abiertas')
 
     else:
-        inscripcion_form = InscripcionForm(instance=inscripcion)
+        inscripcion_form = InscripcionFormA(instance=inscripcion)
 
         return render(request, 'socios/actualizarInscripcion.html', {'formulario': inscripcion_form})
     
@@ -319,8 +331,13 @@ def buscar_inscripciones(request):
 
 def crear_inscripcion_socio(request, socioid):
     mensaje = None
-    aparece_socio = Inscripcion_Socio.objects.order_by("-asiento_bus").first()
-    total = aparece_socio.asiento_bus + 1
+    precio = 0
+    total = 0
+    aparece_socio = Inscripcion_Socio.objects.filter(inscripcion__finalizada = False).order_by("-asiento_bus").first()
+    if aparece_socio:
+        total = aparece_socio.asiento_bus + 1
+    else:
+        total = 0
 
 
     socio = Socios.objects.filter(id = socioid).first()
@@ -333,6 +350,12 @@ def crear_inscripcion_socio(request, socioid):
         inscripcion_form = Inscripcion_SocioForm(request.POST)
 
         if inscripcion_form.is_valid():
+            if inscripcion_form.cleaned_data['guia'] is True:
+                precio = 0
+            elif socio.socio is True:
+                precio = inscripcion.precio_socio
+            elif socio.socio is False:
+                precio = inscripcion.precio_no_socio
             asiento_bus = inscripcion_form.cleaned_data['asiento_bus']
             inscripcion_socio = Inscripcion_Socio.objects.filter(inscripcion = inscripcion)
             ocupado = any(i.asiento_bus == asiento_bus for i in inscripcion_socio)
@@ -353,7 +376,8 @@ def crear_inscripcion_socio(request, socioid):
                                     socios = socio, 
                                     precio = precio, 
                                     numero_bus = numero_bus, 
-                                    asiento_bus= asiento_bus)
+                                    asiento_bus= asiento_bus,
+                                    pago = True)
             
 
             return redirect('Usuarios Inscritos',inscripcion.id)
@@ -361,12 +385,18 @@ def crear_inscripcion_socio(request, socioid):
     else:
         inscripcion_form = Inscripcion_SocioForm()
 
-    return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total})
-    
+        return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total})
+
+
 def crear_inscripcion_socio_b(request, socioid):
-    mensaje = None
-    aparece_socio = Inscripcion_Socio.objects.order_by("-asiento_bus").first()
-    total = aparece_socio.asiento_bus + 1
+    precio = 0
+    mensaje = 0
+    total = 0
+    aparece_socio = Inscripcion_Socio.objects.filter(inscripcion__finalizada = False).order_by("-asiento_bus").first()
+    if aparece_socio:
+        total = aparece_socio.asiento_bus + 1
+    else:
+        total = 0
     socio = Socios.objects.filter(id = socioid).first()
     inscripcion = Inscripciones.objects.filter(finalizada = False).first()
     if socio.socio is True:
@@ -374,23 +404,27 @@ def crear_inscripcion_socio_b(request, socioid):
     else:
         precio = inscripcion.precio_no_socio
     if request.method == 'POST':
-        inscripcion_form = Inscripcion_Socio_B_Form(request.POST)
+        inscripcion_form = Inscripcion_SocioForm(request.POST)
 
         if inscripcion_form.is_valid():
+            if inscripcion_form.cleaned_data['guia'] is True:
+                precio = 0
+            elif socio.socio is True:
+                precio = inscripcion.precio_socio
+            elif socio.socio is False:
+                precio = inscripcion.precio_no_socio
             asiento_bus = inscripcion_form.cleaned_data['asiento_bus']
             inscripcion_socio = Inscripcion_Socio.objects.filter(inscripcion = inscripcion)
             ocupado = any(i.asiento_bus == asiento_bus for i in inscripcion_socio)
             repite = Inscripcion_Socio.objects.filter(inscripcion = inscripcion, socios = socio).count()
             print(repite)
             if repite != 0:
-                mensaje = "Usuario ya Inscripto en ruta"
-                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+                return render(request, 'socios/crearInscripcionSociob.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":"Usuario ya Inscripto en ruta"})
             if ocupado:
-                mensaje = "Asiento ocupado"
-                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+                return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":"Asiento ocupado"})
             elif asiento_bus < 21:
-                mensaje = "La incripcion comienza a partir del asiento 21"
-                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+
+                return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":"La Inscripción comienza a partir del asiento 21"})
             else:
                 if asiento_bus <= 55:
                     numero_bus = 1
@@ -400,14 +434,16 @@ def crear_inscripcion_socio_b(request, socioid):
                                     socios = socio, 
                                     precio = precio, 
                                     numero_bus = numero_bus, 
-                                    asiento_bus= asiento_bus)
+                                    asiento_bus= asiento_bus,
+                                    pago = False)
             
 
             return redirect('Usuarios Inscritos',inscripcion.id)
+            
     else:
-        inscripcion_form = Inscripcion_Socio_B_Form()
+        inscripcion_form = Inscripcion_SocioForm()
 
-    return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total})
+        return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total})
     
 
 def listar_inscritos(request, insid):
@@ -670,13 +706,19 @@ def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
             num = socio.socios.numero_socio
         else:
             num = ""
+        asiento = 0
+        if socio.numero_bus == 1:
+            asiento = socio.asiento_bus
+        else:
+            asiento = socio.asiento_bus - 55
+
         tique_elements = [
             logo_pdf,
             Paragraph(f"Ruta: {inscripcion.nombre}", styles["Normal"]),
             Spacer(1, 6),
             Paragraph(f"Fecha: {inscripcion.fecha}", styles["Normal"]),
             Spacer(1, 6),
-            Paragraph(f"Bus: {socio.numero_bus} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asiento: {socio.asiento_bus}", styles["Normal"]),
+            Paragraph(f"Bus: {socio.numero_bus} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asiento: {asiento}", styles["Normal"]),
             Spacer(1, 6),
             Paragraph(f"Cuota:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{socio.precio}€", styles["Normal"]),
             Spacer(1, 6),
@@ -698,7 +740,7 @@ def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
             Spacer(1, 6),
             Paragraph(f"Fecha: {inscripcion.fecha}", styles["Normal"]),
             Spacer(1, 6),
-            Paragraph(f"Bus: {socio.numero_bus} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asiento: {socio.asiento_bus}", styles["Normal"]),
+            Paragraph(f"Bus: {socio.numero_bus} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asiento: {asiento}", styles["Normal"]),
             Spacer(1, 6),
             Paragraph(f"Cuota:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{socio.precio}€", styles["Normal"]),
             Spacer(1, 6),
@@ -744,6 +786,11 @@ def eliminar_de_inscripcion(request, insid, socioid):
     entity = Inscripcion_Socio.objects.filter(inscripcion__id = insid, socios__id= socioid).first()
     entity.delete()
     return redirect('Usuarios Inscritos', insid)
+
+def eliminar_usuario(request, socioid):
+    entity = Socios.objects.filter(id= socioid).first()
+    entity.delete()
+    return redirect('Listar Socios')
 
 def mostrar_socios_socios(request):
     entity = Socios.objects.filter(socio = True).order_by("numero_socio")
