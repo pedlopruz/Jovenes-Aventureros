@@ -58,11 +58,15 @@ def cargarSocios(request):
 
 def listar_Socios(request):
 
-    inscripcion = Inscripciones.objects.filter(finalizada = False)
-    inscripcion_total = inscripcion.count()
+    total_inscripcion = Inscripciones.objects.filter(finalizada = False).count()
+    inscripcion = Inscripciones.objects.filter(finalizada = False).first()
+    if inscripcion is None:
+        nombre = "NO CREADA"
+    else:
+        nombre = inscripcion.nombre
     socios = Socios.objects.all().order_by("apellidos")
 
-    return render(request, 'socios/mostrarSocios.html', {"entity":socios, "num_inscripcion":inscripcion_total})
+    return render(request, 'socios/mostrarSocios.html', {"entity":socios, "nombre":nombre, "num_inscripcion":total_inscripcion})
 
 def actualizar_Socio(request, socioid):
     socio = Socios.objects.filter(id = socioid).first()
@@ -193,9 +197,10 @@ def buscar(request):
         elif len(user) > 100:
             return render(request, 'Listar Socios')
         else:
+            total_inscripcion = Inscripciones.objects.filter(finalizada = False).count()
             user = user.upper()
             usuario = Socios.objects.filter(Q(apellidos__icontains=user)| Q(numero_socio__icontains=user)).order_by("numero_socio")
-            return render(request, "socios/busquedaSocio.html", {"entity": usuario})
+            return render(request, "socios/busquedaSocio.html", {"entity": usuario, "num_inscripcion":total_inscripcion})
     else:
         return redirect('Listar Socios')
     
@@ -204,6 +209,9 @@ def calcular_suma(request):
     total_no_socios = 0
     total_metalico = 0
     total_banco = 0
+    numero_socios = 0
+    numero_no_socios = 0
+    total_guia = 0
     inscripciones = Inscripciones.objects.filter(finalizada = False)
     if inscripciones:
         for ins in inscripciones:
@@ -219,11 +227,23 @@ def calcular_suma(request):
                 else:
                     total_banco += 1
 
-            
+                if inso.socios.socio is True:
+                    numero_socios +=1
+                else:
+                    numero_no_socios +=1
+                if inso.guia is True:
+                    total_guia +=1
+                
+
+
+
+            ins.total_guias = total_guia
             ins.recaudacion_socios = total_socios 
             ins.recaudacion_no_socios = total_no_socios
-            ins.pago_metalico = total_metalico
+            ins.pago_metalico = total_metalico - total_guia
             ins.pago_banco = total_banco
+            ins.total_socios = numero_socios - total_guia
+            ins.total_no_socios = numero_no_socios
             ins.save()
 
     return print("Todo correcto")
@@ -377,7 +397,8 @@ def crear_inscripcion_socio(request, socioid):
                                     precio = precio, 
                                     numero_bus = numero_bus, 
                                     asiento_bus= asiento_bus,
-                                    pago = True)
+                                    pago = True,
+                                    guia = inscripcion_form.cleaned_data['guia'])
             
 
             return redirect('Usuarios Inscritos',inscripcion.id)
@@ -409,6 +430,7 @@ def crear_inscripcion_socio_b(request, socioid):
         if inscripcion_form.is_valid():
             if inscripcion_form.cleaned_data['guia'] is True:
                 precio = 0
+
             elif socio.socio is True:
                 precio = inscripcion.precio_socio
             elif socio.socio is False:
@@ -435,7 +457,8 @@ def crear_inscripcion_socio_b(request, socioid):
                                     precio = precio, 
                                     numero_bus = numero_bus, 
                                     asiento_bus= asiento_bus,
-                                    pago = False)
+                                    pago = False,
+                                    guia = inscripcion_form.cleaned_data['guia'])
             
 
             return redirect('Usuarios Inscritos',inscripcion.id)

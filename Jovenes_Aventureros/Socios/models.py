@@ -64,7 +64,9 @@ class Inscripciones(models.Model):
     recaudacion_no_socios = models.IntegerField(default=0)
     pago_metalico = models.IntegerField(default=0)
     pago_banco = models.IntegerField(default=0)
-
+    total_socios = models.IntegerField(default=0)
+    total_no_socios = models.IntegerField(default=0)
+    total_guias = models.IntegerField(default=0)
     def __str__(self):
         return f"{self.nombre}"
     
@@ -77,5 +79,6 @@ class Inscripcion_Socio(models.Model):
     numero_bus = models.PositiveIntegerField(validators=[MinValueValidator(1),MaxValueValidator(2)])
     asiento_bus = models.PositiveIntegerField(validators=[MinValueValidator(1),MaxValueValidator(110)])
     pago = models.BooleanField(default=False)
+    guia = models.BooleanField(default=False)
     
 
