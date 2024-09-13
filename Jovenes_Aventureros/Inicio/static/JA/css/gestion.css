@@ -72,6 +72,15 @@
   bottom: 30px;
   object-fit: contain;
 }
+.pgina-de-inicio .logoV {
+  position: absolute;
+  width: 800px;
+  height: 600px;
+  top: -320px;
+  left: 200px;
+  bottom: 30px;
+  object-fit: contain;
+}
 .pgina-de-inicio .logoc {
   position: absolute;
   width: 700px;
