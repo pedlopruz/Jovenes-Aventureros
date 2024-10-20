@@ -505,11 +505,10 @@ def buscar_inscripciones_socios(request, insid):
 
 def exportar_socios_a_Pdf(request, insid):
     actualDate = datetime.now().date()
-    inscripcion = Inscripciones.objects.filter(id = insid).first()
+    inscripcion = Inscripciones.objects.filter(id=insid).first()
     nombre = inscripcion.nombre
-    queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("socios__apellidos")
+    queryset = Inscripcion_Socio.objects.filter(inscripcion=inscripcion).order_by("socios__apellidos")
     filename = f"Lista Bus {nombre}"
-    
 
     # Unpack values
     # Response Object
@@ -517,8 +516,15 @@ def exportar_socios_a_Pdf(request, insid):
     response_pdf["Content-Disposition"] = f"attachment; filename={filename}.pdf"
     styles = getSampleStyleSheet()
 
-    # This is the PDF document
-    doc = SimpleDocTemplate(response_pdf, pagesize=letter)
+    # Reduce the top margin in the document
+    doc = SimpleDocTemplate(
+        response_pdf,
+        pagesize=letter,
+        topMargin=20,  # Ajustar este valor para reducir el margen superior
+        leftMargin=30,
+        rightMargin=30,
+        bottomMargin=20,
+    )
 
     # Create a Story list to hold elements
     Story = []
@@ -529,7 +535,7 @@ def exportar_socios_a_Pdf(request, insid):
 
     cover_elements = [
         Paragraph(title, styles["Title"]),
-        Spacer(1, 12),
+        Spacer(1, 12),  # Ajustar el espacio vertical si es necesario
         Paragraph(actualDateText, styles["Normal"]),
         Spacer(1, 6),
     ]
@@ -538,60 +544,55 @@ def exportar_socios_a_Pdf(request, insid):
     # Separation for the table
     Story.append(Spacer(1, 10))
     table_data = [
-        [       
-
-            "apellidos",
+        [
+            "Apellidos",
             "Nombre",
             "Teléfono",
-            "Nº Bus",
-            "Asiento",
+            "Bus-Asiento",
             "Regalo",
         ]
     ]
 
     for socio in queryset:
-
         table_row = [
-        socio.socios.apellidos,
-        socio.socios.nombre,
-        socio.socios.telefono,
-        socio.numero_bus,
-        socio.asiento_bus,
-        socio.socios.regalo,
-    ]
+            socio.socios.apellidos,
+            socio.socios.nombre,
+            socio.socios.telefono,
+            f"BUS {socio.numero_bus}-{socio.asiento_bus}",
+            socio.socios.regalo,
+        ]
         table_data.append(table_row)
 
     # Create a table
-    table = Table(
-        table_data, colWidths=[100, 100, 100, 100]
-    )  # Adjust the column width as needed
+    table = Table(table_data, colWidths=[100, 84, 50, 50])  # Adjust the column width as needed
 
     # Table style
     table_style = TableStyle(
-            [
-                ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
-                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
-                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-                ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
-                ("GRID", (0, 0), (-1, -1), 1, colors.black),
-                ("FONTSIZE", (0, 0), (-1, -1), 8),  # Adjust the font size as needed
-                ("WORDWRAP", (0, 0), (-1, -1), True),  # Allow word wrapping
-            ]
+        [
+            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+            ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ("FONTSIZE", (0, 0), (-1, -1), 8),  # Adjust the font size as needed
+            ("WORDWRAP", (0, 0), (-1, -1), True),  # Allow word wrapping
+        ]
     )
+
+    # Apply colors to the "Regalo" column based on its value
     for i, row in enumerate(table_data[1:], start=1):  # Comenzar desde la segunda fila (índice 1)
-        if row[5]:  # Si "Regalo" es True
+        if row[4]:  # Si el valor de "Regalo" es True (o no vacío)
             bg_color = colors.green
             text_color = colors.green
-        else:  # Si "Regalo" es False
+        else:  # Si el valor de "Regalo" es False (o vacío)
             bg_color = colors.red
             text_color = colors.red
-        table_style.add("BACKGROUND", (5, i), (5, i), bg_color)
-        table_style.add("TEXTCOLOR", (5, i), (5, i), text_color)
+        table_style.add("BACKGROUND", (4, i), (4, i), bg_color)  # Cambia el índice a 4
+        table_style.add("TEXTCOLOR", (4, i), (4, i), text_color)  # Cambia el índice a 4
 
     table.setStyle(table_style)
-    
 
     # Table to Story
     Story.append(table)
@@ -600,11 +601,13 @@ def exportar_socios_a_Pdf(request, insid):
     return response_pdf
 
 
+
+
 def exportar_socios_a_Pdf_v2(request, insid):
     actualDate = datetime.now().date()
     inscripcion = Inscripciones.objects.filter(id = insid).first()
     nombre = inscripcion.nombre
-    queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("-socios__apellidos")
+    queryset = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("socios__apellidos")
     filename = f"Lista Seguro {nombre}"
     
 
@@ -636,7 +639,7 @@ def exportar_socios_a_Pdf_v2(request, insid):
     Story.append(Spacer(1, 10))
     table_data = [
         [       
-            "apellidos",
+            "Apellidos",
             "Nombre",
             "DNI"
         ]
