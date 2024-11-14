@@ -473,7 +473,7 @@ def listar_inscritos(request, insid):
 
     inscripcion = Inscripciones.objects.filter(id = insid).first()
     nombre = inscripcion.nombre
-    inscripcion_socio = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("asiento_bus")
+    inscripcion_socio = Inscripcion_Socio.objects.filter(inscripcion = inscripcion).order_by("-asiento_bus")
     return render(request, 'socios/mostrarInscripcionSocio.html', {'entity': inscripcion_socio, "nombre":nombre})
 
 
@@ -574,7 +574,7 @@ def exportar_socios_a_Pdf(request, insid):
             ("ALIGN", (0, 0), (-1, -1), "CENTER"),
             ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
             ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-            ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+            ("BACKGROUND", (0, 1), (-1, -1), colors.white),
             ("GRID", (0, 0), (-1, -1), 1, colors.black),
             ("FONTSIZE", (0, 0), (-1, -1), 8),  # Adjust the font size as needed
             ("WORDWRAP", (0, 0), (-1, -1), True),  # Allow word wrapping
@@ -584,8 +584,8 @@ def exportar_socios_a_Pdf(request, insid):
     # Apply colors to the "Regalo" column based on its value
     for i, row in enumerate(table_data[1:], start=1):  # Comenzar desde la segunda fila (índice 1)
         if row[4]:  # Si el valor de "Regalo" es True (o no vacío)
-            bg_color = colors.green
-            text_color = colors.green
+            bg_color = colors.limegreen
+            text_color = colors.limegreen
         else:  # Si el valor de "Regalo" es False (o vacío)
             bg_color = colors.red
             text_color = colors.red
@@ -670,11 +670,11 @@ def exportar_socios_a_Pdf_v2(request, insid):
         TableStyle(
             [
                 ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
-                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
                 ("ALIGN", (0, 0), (-1, -1), "CENTER"),
                 ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
                 ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-                ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+                ("BACKGROUND", (0, 1), (-1, -1), colors.white),
                 ("GRID", (0, 0), (-1, -1), 1, colors.black),
                 ("FONTSIZE", (0, 0), (-1, -1), 8),  # Adjust the font size as needed
                 ("WORDWRAP", (0, 0), (-1, -1), True),  # Allow word wrapping
