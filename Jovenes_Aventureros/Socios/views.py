@@ -353,11 +353,24 @@ def crear_inscripcion_socio(request, socioid):
     mensaje = None
     precio = 0
     total = 0
+    total_itermedio = []
     aparece_socio = Inscripcion_Socio.objects.filter(inscripcion__finalizada = False).order_by("-asiento_bus").first()
     if aparece_socio:
         total = aparece_socio.asiento_bus + 1
     else:
         total = 0
+
+    aparece_socio_intermedio = Inscripcion_Socio.objects.filter(inscripcion__finalizada = False).order_by("asiento_bus")
+    for i in range(len(aparece_socio_intermedio)-1):
+        primero = aparece_socio_intermedio[i]
+        segundo = aparece_socio_intermedio[i+1]
+        if segundo.asiento_bus - primero.asiento_bus == 2:
+            total_itermedio.append(primero.asiento_bus+1)
+
+
+    
+
+    
 
 
     socio = Socios.objects.filter(id = socioid).first()
@@ -406,18 +419,27 @@ def crear_inscripcion_socio(request, socioid):
     else:
         inscripcion_form = Inscripcion_SocioForm()
 
-        return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total})
+        return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total, "total_itermedio":total_itermedio})
 
 
 def crear_inscripcion_socio_b(request, socioid):
     precio = 0
     mensaje = 0
     total = 0
+    total_itermedio = []
     aparece_socio = Inscripcion_Socio.objects.filter(inscripcion__finalizada = False).order_by("-asiento_bus").first()
     if aparece_socio:
         total = aparece_socio.asiento_bus + 1
     else:
         total = 0
+
+    aparece_socio_intermedio = Inscripcion_Socio.objects.filter(inscripcion__finalizada = False).order_by("asiento_bus")
+    for i in range(len(aparece_socio_intermedio)-1):
+        primero = aparece_socio_intermedio[i]
+        segundo = aparece_socio_intermedio[i+1]
+        if segundo.asiento_bus - primero.asiento_bus == 2:
+            total_itermedio.append(primero.asiento_bus+1)
+
     socio = Socios.objects.filter(id = socioid).first()
     inscripcion = Inscripciones.objects.filter(finalizada = False).first()
     if socio.socio is True:
@@ -466,7 +488,7 @@ def crear_inscripcion_socio_b(request, socioid):
     else:
         inscripcion_form = Inscripcion_SocioForm()
 
-        return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total})
+        return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total, "total_itermedio":total_itermedio})
     
 
 def listar_inscritos(request, insid):
