@@ -396,10 +396,10 @@ def crear_inscripcion_socio(request, socioid):
             print(repite)
             if repite != 0:
                 mensaje = "Usuario ya Inscripto en ruta"
-                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total, "total_itermedio":total_itermedio})
             if ocupado:
                 mensaje = "Asiento ocupado"
-                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje})
+                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total, "total_itermedio":total_itermedio})
             else:
                 if asiento_bus <= 55:
                     numero_bus = 1
@@ -463,12 +463,12 @@ def crear_inscripcion_socio_b(request, socioid):
             repite = Inscripcion_Socio.objects.filter(inscripcion = inscripcion, socios = socio).count()
             print(repite)
             if repite != 0:
-                return render(request, 'socios/crearInscripcionSociob.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":"Usuario ya Inscripto en ruta"})
+                return render(request, 'socios/crearInscripcionSociob.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":"Usuario ya Inscripto en ruta", "total":total, "total_itermedio":total_itermedio})
             if ocupado:
-                return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":"Asiento ocupado"})
+                return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":"Asiento ocupado", "total":total, "total_itermedio":total_itermedio})
             elif asiento_bus < 21:
 
-                return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":"La Inscripción comienza a partir del asiento 21"})
+                return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":"La Inscripción comienza a partir del asiento 21", "total":total, "total_itermedio":total_itermedio})
             else:
                 if asiento_bus <= 55:
                     numero_bus = 1
