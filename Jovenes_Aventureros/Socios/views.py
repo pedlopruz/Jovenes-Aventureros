@@ -363,21 +363,24 @@ def crear_inscripcion_socio(request, socioid):
 
     aparece_socio_intermedio = Inscripcion_Socio.objects.filter(inscripcion__finalizada = False).order_by("asiento_bus")
     j= 1
-    for i in aparece_socio_intermedio:
-        primero = i.asiento_bus
-        for j in range(primero):
-            if aparece_socio_intermedio.filter(asiento_bus = j):
-                pass
-            else:
-                total_intermedio_dividido.add(j)
-    total_intermedio_dividido = list(total_intermedio_dividido)
-    inicio = total_intermedio_dividido[1]
-    for x in range(1, len(total_intermedio_dividido)):
-        if total_intermedio_dividido[x] != total_intermedio_dividido[x-1]+1:
-            total_intermedio.append((inicio, total_intermedio_dividido[x-1]))
-            inicio = total_intermedio_dividido[x]
+    if len(aparece_socio_intermedio) > 0:
 
-    total_intermedio.append((inicio, total_intermedio_dividido[-1]))
+        for i in aparece_socio_intermedio:
+            primero = i.asiento_bus
+            for j in range(primero):
+                if aparece_socio_intermedio.filter(asiento_bus = j):
+                    pass
+                else:
+                    total_intermedio_dividido.add(j)
+        if len(total_intermedio_dividido) > 1:
+            total_intermedio_dividido = list(total_intermedio_dividido)
+            inicio = total_intermedio_dividido[1]
+            for x in range(1, len(total_intermedio_dividido)):
+                if total_intermedio_dividido[x] != total_intermedio_dividido[x-1]+1:
+                    total_intermedio.append((inicio, total_intermedio_dividido[x-1]))
+                    inicio = total_intermedio_dividido[x]
+
+            total_intermedio.append((inicio, total_intermedio_dividido[-1]))
 
 
     socio = Socios.objects.filter(id = socioid).first()
@@ -403,10 +406,10 @@ def crear_inscripcion_socio(request, socioid):
             print(repite)
             if repite != 0:
                 mensaje = "Usuario ya Inscripto en ruta"
-                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total, "total_intermedio":total_itermedio})
+                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total, "total_intermedio":total_intermedio})
             if ocupado:
                 mensaje = "Asiento ocupado"
-                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total, "total_intermedio":total_itermedio})
+                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total, "total_intermedio":total_intermedio})
             else:
                 if asiento_bus <= 55:
                     numero_bus = 1
@@ -443,21 +446,25 @@ def crear_inscripcion_socio_b(request, socioid):
 
     aparece_socio_intermedio = Inscripcion_Socio.objects.filter(inscripcion__finalizada = False).order_by("asiento_bus")
     j= 1
-    for i in aparece_socio_intermedio:
-        primero = i.asiento_bus
-        for j in range(primero):
-            if aparece_socio_intermedio.filter(asiento_bus = j):
-                pass
-            else:
-                total_intermedio_dividido.add(j)
-    total_intermedio_dividido = list(total_intermedio_dividido)
-    inicio = total_intermedio_dividido[1]
-    for x in range(1, len(total_intermedio_dividido)):
-        if total_intermedio_dividido[x] != total_intermedio_dividido[x-1]+1:
-            total_intermedio.append((inicio, total_intermedio_dividido[x-1]))
-            inicio = total_intermedio_dividido[x]
+    if len(aparece_socio_intermedio) > 0:
 
-    total_intermedio.append((inicio, total_intermedio_dividido[-1]))
+        for i in aparece_socio_intermedio:
+            primero = i.asiento_bus
+            for j in range(primero):
+                if aparece_socio_intermedio.filter(asiento_bus = j):
+                    pass
+                else:
+                    total_intermedio_dividido.add(j)
+        if len(total_intermedio_dividido) > 1:
+            total_intermedio_dividido = list(total_intermedio_dividido)
+            inicio = total_intermedio_dividido[1]
+            for x in range(1, len(total_intermedio_dividido)):
+                if total_intermedio_dividido[x] != total_intermedio_dividido[x-1]+1:
+                    total_intermedio.append((inicio, total_intermedio_dividido[x-1]))
+                    inicio = total_intermedio_dividido[x]
+
+            total_intermedio.append((inicio, total_intermedio_dividido[-1]))
+
 
     socio = Socios.objects.filter(id = socioid).first()
     inscripcion = Inscripciones.objects.filter(finalizada = False).first()
