@@ -45,7 +45,9 @@
                 <td class="td">{{ socio.ciudad }}</td>
                 <td class="td">{{ socio.provincia }}</td>
                 <td class="td">{{ socio.talla_camiseta }}</td>
-                {% if socio.regalo is False %}
+                {% if socio.regalo is False and socio.socio is False%}
+                <td class="tdb" style="color: aliceblue;"></td>
+                {% elif socio.regalo is False and socio.socio is True%}
                 <td class="tdr" style="color: aliceblue;"></td>
                 {% else %}
                 <td class="tdv" style="color: aliceblue;"></td>

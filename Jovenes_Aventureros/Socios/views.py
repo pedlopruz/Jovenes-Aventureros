@@ -598,6 +598,7 @@ def exportar_socios_a_Pdf(request, insid):
             "Teléfono",
             "Bus-Asiento",
             "Regalo",
+            "Observaciones",
         ]
     ]
 
@@ -608,11 +609,13 @@ def exportar_socios_a_Pdf(request, insid):
             socio.socios.telefono,
             f"BUS {socio.numero_bus}-{socio.asiento_bus}",
             socio.socios.regalo,
+            socio.socios.socio,
         ]
+
         table_data.append(table_row)
 
     # Create a table
-    table = Table(table_data, colWidths=[100, 84, 50, 50])  # Adjust the column width as needed
+    table = Table(table_data, colWidths=[100, 84, 50, 50, 84])  # Adjust the column width as needed
 
     # Table style
     table_style = TableStyle(
@@ -626,17 +629,21 @@ def exportar_socios_a_Pdf(request, insid):
             ("GRID", (0, 0), (-1, -1), 1, colors.black),
             ("FONTSIZE", (0, 0), (-1, -1), 8),  # Adjust the font size as needed
             ("WORDWRAP", (0, 0), (-1, -1), True),  # Allow word wrapping
+            ("TEXTCOLOR", (-1, 0), (-1, -1), colors.white),  # Hacer que la última columna sea invisible
         ]
     )
 
     # Apply colors to the "Regalo" column based on its value
     for i, row in enumerate(table_data[1:], start=1):  # Comenzar desde la segunda fila (índice 1)
-        if row[4]:  # Si el valor de "Regalo" es True (o no vacío)
-            bg_color = colors.limegreen
-            text_color = colors.limegreen
-        else:  # Si el valor de "Regalo" es False (o vacío)
+        if row[4] is  False and row[5] is False:  
+            bg_color = colors.white
+            text_color = colors.white
+        elif row[4] is  False and row[5] is True:  
             bg_color = colors.red
             text_color = colors.red
+        else:  
+            bg_color = colors.green
+            text_color = colors.green
         table_style.add("BACKGROUND", (4, i), (4, i), bg_color)  # Cambia el índice a 4
         table_style.add("TEXTCOLOR", (4, i), (4, i), text_color)  # Cambia el índice a 4
 
