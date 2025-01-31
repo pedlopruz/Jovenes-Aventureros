@@ -17,9 +17,9 @@
           <th class="th">Dificultad</th>
           <th class="th">Precio Socio</th>
           <th class="th">Precio No Socio</th>
-          <th class="th">Recaudación Socios</th>
+          <th class="th">Recaudación Metálico</th>
+          <th class="th">Recaudación Banco</th>
           <th class="th">Nº/PS</th>
-          <th class="th">Recaudación No Socios</th>
           <th class="th">Nº/PNS</th>
           <th class="th">Pago Metálico</th>
           <th class="th">Pago Banco</th>
@@ -38,9 +38,9 @@
             <td class="td">{{ ins.dificultad }}</td>
             <td class="td">{{ ins.precio_socio }}€</td>
             <td class="td">{{ ins.precio_no_socio }}€</td>
-            <td class="td">{{ ins.recaudacion_socios }}€</td>
+            <td class="td">{{ ins.recaudacion_metalico }}€</td>
+            <td class="td">{{ ins.recaudacion_banco }}€</td>
             <td class="td">{{ ins.total_socios}}</td>
-            <td class="td">{{ ins.recaudacion_no_socios }}€</td>
             <td class="td">{{ ins.total_no_socios}}</td>
             <td class="td">{{ ins.pago_metalico }}</td>
             <td class="td">{{ ins.pago_banco }}</td>
@@ -57,6 +57,7 @@
         {% endfor %}
       </tbody>
     </table>
+    <button type="submit" class="btn2 btn-success" style="margin-top: 20px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:1120px;padding: 10px 15px;"><a href="{% url 'Confirmacion' %}" style="color: rgba(26, 53, 199, 1);">Borrado Anual Socios</a></button>
      
 
   </div>

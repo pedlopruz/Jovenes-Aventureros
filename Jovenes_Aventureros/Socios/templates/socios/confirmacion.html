@@ -1,0 +1,16 @@
+{% extends "jovenesAventureros/base.html" %}
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block content %}
+  <div class="overlap-groupRegister">
+  <div class="contenedorFormularioPerfil"style="width: 70%; margin-top: -2px;">
+    <h1 style="color: rgba(26, 53, 199, 1); margin-left:150px; margin-right:auto;">Desea Realiza el Borrado Anual</h1>
+    <button type="submit" class="btn btn-success" style="margin-bottom: 20px;background-color: rgb(3, 144, 27); border-radius: 10px; color: white; margin-left:300px;padding: 10px 15px;"><a href="{% url 'Reestablecer Usuario' %}" style="color: aliceblue;">Aceptar</a></button>
+    <button type="submit" class="btn btn-success" style="margin-bottom: 20px;background-color: rgb(236, 16, 16); border-radius: 10px; color: white; margin-left:53px;padding: 10px 15px;"><a href="{% url 'Incripciones Cerradas' %}" style="color: aliceblue;">Cancelar</a></button>
+  </div>
+  </div>
+  <div class="boRE">
+</div>
+{% endblock %}  

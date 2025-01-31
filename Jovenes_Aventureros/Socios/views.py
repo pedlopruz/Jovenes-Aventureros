@@ -206,6 +206,8 @@ def buscar(request):
     
 def calcular_suma(request):
     total_socios = 0
+    recaudacion_banco = 0
+    recaudacion_metalico = 0
     total_no_socios = 0
     total_metalico = 0
     total_banco = 0
@@ -224,8 +226,10 @@ def calcular_suma(request):
 
                 if inso.pago is True:
                     total_metalico += 1
+                    recaudacion_metalico += inso.precio
                 else:
                     total_banco += 1
+                    recaudacion_banco += inso.precio
 
                 if inso.socios.socio is True:
                     numero_socios +=1
@@ -238,8 +242,9 @@ def calcular_suma(request):
 
 
             ins.total_guias = total_guia
-            ins.recaudacion_socios = total_socios 
-            ins.recaudacion_no_socios = total_no_socios
+            ins.recaudacion_total = total_socios + total_no_socios
+            ins.recaudacion_banco = recaudacion_banco
+            ins.recaudacion_metalico = recaudacion_metalico
             ins.pago_metalico = total_metalico - total_guia
             ins.pago_banco = total_banco
             ins.total_socios = numero_socios - total_guia
@@ -902,3 +907,6 @@ def reestablecer_usuarios(request):
         i.save()
 
     return redirect("Listar Socios")
+
+def confirmacion(request):
+    return render(request, "socios/confirmacion.html")

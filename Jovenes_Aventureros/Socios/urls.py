@@ -26,6 +26,7 @@ urlpatterns = [
     path('mostrarUsuariosSocios', mostrar_socios_socios, name="Mostrar Usuarios Socios"),
     path('mostrarUsuariosSocios/buscar/', buscar_socios_socios),
     path('reestablecerUsuarios/', reestablecer_usuarios, name = "Reestablecer Usuario"),
+    path('confirmacion/', confirmacion, name = "Confirmacion"),
     path('eliminarUsuario/<int:socioid>', eliminar_usuario, name = "Eliminar Usuario"),
 
     
