@@ -22,33 +22,51 @@ from reportlab.lib.pagesizes import letter, A6, A4
 from django.http import HttpResponse
 from datetime import datetime
 from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame, NextPageTemplate, PageBreak, Flowable
+import requests
+from bs4 import BeautifulSoup
 # Create your views here.
+
+import csv
+from datetime import datetime
+from django.http import HttpResponse
 
 def cargarSocios(request):
     Socios.objects.all().delete()
-    path3 = "data/socios.csv"
-    with open(path3, newline='', encoding='utf-8-sig') as csvfile:
-        lector_csv = csv.DictReader(csvfile, delimiter=';')
+
+    path = "data/socios.csv"
+    with open(path, newline='', encoding='utf-8-sig') as csvfile:
+        lector_csv = csv.DictReader(csvfile, delimiter=',')
+
         for numero_fila, fila in enumerate(lector_csv, start=1):
             try:
-                apellidos = fila['Apellido']
-                nombre = fila['Nombre']
-                dni = fila['DNI']
-                fecha = fila['Fecha']
-                telefono = fila['Telefono']
-                codigo_postal = fila['CP']
-                ciudad = fila['Ciudad']
-                provincia = fila['Provincia']
-                Socios.objects.create(nombre = nombre, 
-                                      apellidos=apellidos, 
-                                      dni = dni, 
-                                      fecha_nacimiento = fecha, 
-                                      telefono=telefono, 
-                                      codigo_postal = codigo_postal, 
-                                      ciudad = ciudad, 
-                                      provincia = provincia)
-                    
-                    
+                nombre = fila['Nombre'].strip()
+                apellidos = fila['Apellidos'].strip()
+                dni = fila['DNI'].strip()
+                telefono = fila['Teléfono'].strip()
+                codigo_postal = fila['Código Postal'].strip()
+                ciudad = fila['Ciudad'].strip()
+                provincia = fila['Provincia'].strip()
+
+                # Fecha de nacimiento
+                fecha_raw = fila['Fecha de Nacimiento'].strip()
+                if fecha_raw.lower() == "sin especificar" or fecha_raw == "":
+                    fecha_nacimiento = None
+                else:
+                    fecha_nacimiento = datetime.strptime(
+                        fecha_raw, "%d/%m/%Y"
+                    ).date()
+
+                Socios.objects.create(
+                    nombre=nombre,
+                    apellidos=apellidos,
+                    dni=dni,
+                    fecha_nacimiento=fecha_nacimiento,
+                    telefono=telefono,
+                    codigo_postal=codigo_postal,
+                    ciudad=ciudad,
+                    provincia=provincia
+                )
+
             except Exception as e:
                 print(f"Error en la fila {numero_fila}: {e}")
                 print(f"Contenido de la fila {numero_fila}: {fila}")
@@ -56,17 +74,32 @@ def cargarSocios(request):
     return HttpResponse("Todo Ok")
 
 
+def obtener_imagen_web_BeautifulSoup():
+    try:
+        url = "https://jovenesaventureros.blogspot.com/"
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, "html.parser")
+
+        # Obtenemos todas las imágenes dentro de div.separator
+        imagenes = soup.select("div.separator img")
+
+        if len(imagenes) >= 2:  # verificamos que haya al menos 2
+            return imagenes[1]["src"]  # la segunda imagen (índice 1)
+        
+        return None  # si no hay suficientes imágenes
+
+    except Exception as e:
+        print("❌ ERROR BeautifulSoup:", type(e).__name__, str(e))
+        return None
+
+
+
 def listar_Socios(request):
 
-    total_inscripcion = Inscripciones.objects.filter(finalizada = False).count()
-    inscripcion = Inscripciones.objects.filter(finalizada = False).first()
-    if inscripcion is None:
-        nombre = "NO CREADA"
-    else:
-        nombre = inscripcion.nombre
-    socios = Socios.objects.all().order_by("apellidos")
+    imagen_url = obtener_imagen_web_BeautifulSoup()
+    print(imagen_url)
+    return render(request, "socios/mostrarSocios.html", {"imagen_url": imagen_url})
 
-    return render(request, 'socios/mostrarSocios.html', {"entity":socios, "nombre":nombre, "num_inscripcion":total_inscripcion})
 
 def actualizar_Socio(request, socioid):
     socio = Socios.objects.filter(id = socioid).first()
@@ -200,7 +233,7 @@ def buscar(request):
             total_inscripcion = Inscripciones.objects.filter(finalizada = False).count()
             user = user.upper()
             usuario = Socios.objects.filter(Q(apellidos__icontains=user)| Q(numero_socio__icontains=user)).order_by("numero_socio")
-            return render(request, "socios/busquedaSocio.html", {"entity": usuario, "num_inscripcion":total_inscripcion})
+            return render(request, "socios/busquedaSocio.html", {"entity": usuario, "num_inscripcion":total_inscripcion, "user":user})
     else:
         return redirect('Listar Socios')
     
@@ -355,172 +388,180 @@ def buscar_inscripciones(request):
 
 
 def crear_inscripcion_socio(request, socioid):
+
     mensaje = None
     precio = 0
-    total = 0
-    total_intermedio = []
-    total_intermedio_dividido = set()
-    aparece_socio = Inscripcion_Socio.objects.filter(inscripcion__finalizada = False).order_by("-asiento_bus").first()
-    if aparece_socio:
-        total = aparece_socio.asiento_bus + 1
-    else:
-        total = 0
 
-    aparece_socio_intermedio = Inscripcion_Socio.objects.filter(inscripcion__finalizada = False).order_by("asiento_bus")
-    j= 1
-    if len(aparece_socio_intermedio) > 0:
+    socio = Socios.objects.filter(id=socioid).first()
+    inscripcion = Inscripciones.objects.filter(finalizada=False).first()
 
-        for i in aparece_socio_intermedio:
-            primero = i.asiento_bus
-            for j in range(primero):
-                if aparece_socio_intermedio.filter(asiento_bus = j):
-                    pass
-                else:
-                    total_intermedio_dividido.add(j)
-        if len(total_intermedio_dividido) > 1:
-            total_intermedio_dividido = list(total_intermedio_dividido)
-            inicio = total_intermedio_dividido[1]
-            for x in range(1, len(total_intermedio_dividido)):
-                if total_intermedio_dividido[x] != total_intermedio_dividido[x-1]+1:
-                    total_intermedio.append((inicio, total_intermedio_dividido[x-1]))
-                    inicio = total_intermedio_dividido[x]
+    # ⚠️ SIEMPRE DEFINIDA
+    asientos_ocupados = list(
+        Inscripcion_Socio.objects
+        .filter(inscripcion=inscripcion)
+        .values_list('asiento_bus', flat=True)
+    )
 
-            total_intermedio.append((inicio, total_intermedio_dividido[-1]))
+    # Listas de asientos
+    asientos_bus_1 = list(range(1, 56))     # 1 - 55
+    asientos_bus_2 = list(range(56, 111))   # 56 - 110
 
+    primer_bus_lleno = len(
+        [a for a in asientos_ocupados if a <= 55]
+    ) >= 55
 
-    socio = Socios.objects.filter(id = socioid).first()
-    inscripcion = Inscripciones.objects.filter(finalizada = False).first()
-    if socio.socio is True:
+    # 💰 Precio inicial (GET)
+    if socio.socio:
         precio = inscripcion.precio_socio
     else:
         precio = inscripcion.precio_no_socio
+
     if request.method == 'POST':
         inscripcion_form = Inscripcion_SocioForm(request.POST)
 
         if inscripcion_form.is_valid():
-            if inscripcion_form.cleaned_data['guia'] is True:
-                precio = 0
-            elif socio.socio is True:
-                precio = inscripcion.precio_socio
-            elif socio.socio is False:
-                precio = inscripcion.precio_no_socio
-            asiento_bus = inscripcion_form.cleaned_data['asiento_bus']
-            inscripcion_socio = Inscripcion_Socio.objects.filter(inscripcion = inscripcion)
-            ocupado = any(i.asiento_bus == asiento_bus for i in inscripcion_socio)
-            repite = Inscripcion_Socio.objects.filter(inscripcion = inscripcion, socios = socio).count()
-            print(repite)
-            if repite != 0:
-                mensaje = "Usuario ya Inscripto en ruta"
-                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total, "total_intermedio":total_intermedio})
-            if ocupado:
-                mensaje = "Asiento ocupado"
-                return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total, "total_intermedio":total_intermedio})
-            else:
-                if asiento_bus <= 55:
-                    numero_bus = 1
-                else:
-                    numero_bus = 2
-                Inscripcion_Socio.objects.create(inscripcion = inscripcion, 
-                                    socios = socio, 
-                                    precio = precio, 
-                                    numero_bus = numero_bus, 
-                                    asiento_bus= asiento_bus,
-                                    pago = True,
-                                    guia = inscripcion_form.cleaned_data['guia'])
-            
 
-            return redirect('Usuarios Inscritos',inscripcion.id)
-            
+            es_guia = inscripcion_form.cleaned_data['guia']
+
+            # 🔥 PRECIO DEFINITIVO
+            if es_guia:
+                precio = 0
+            elif socio.socio:
+                precio = inscripcion.precio_socio
+            else:
+                precio = inscripcion.precio_no_socio
+
+            asiento_bus = inscripcion_form.cleaned_data['asiento_bus']
+
+            # VALIDACIONES
+            if asiento_bus in asientos_ocupados:
+                mensaje = "Asiento ocupado"
+
+            elif Inscripcion_Socio.objects.filter(
+                inscripcion=inscripcion,
+                socios=socio
+            ).exists():
+                mensaje = "Usuario ya inscrito en la ruta"
+
+            else:
+                numero_bus = 1 if asiento_bus <= 55 else 2
+
+                Inscripcion_Socio.objects.create(
+                    inscripcion=inscripcion,
+                    socios=socio,
+                    precio=precio,
+                    numero_bus=numero_bus,
+                    asiento_bus=asiento_bus,
+                    pago=True,
+                    guia=es_guia
+                )
+
+                return redirect('Usuarios Inscritos', inscripcion.id)
+
     else:
         inscripcion_form = Inscripcion_SocioForm()
 
-        return render(request, 'socios/crearInscripcionSocio.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total, "total_intermedio":total_intermedio})
+    # 👇 UN SOLO RENDER, VARIABLES GARANTIZADAS
+    return render(request, 'socios/crearInscripcionSocio.html', {
+        "formulario": inscripcion_form,
+        "socio": socio,
+        "inscripcion": inscripcion,
+        "precio": precio,
+        "mensaje": mensaje,
+        "asientos_ocupados": asientos_ocupados,
+        "asientos_bus_1": asientos_bus_1,
+        "asientos_bus_2": asientos_bus_2,
+        "primer_bus_lleno": primer_bus_lleno,
+    })
+
 
 
 def crear_inscripcion_socio_b(request, socioid):
+
+    mensaje = None
     precio = 0
-    mensaje = 0
-    total = 0
-    total_intermedio = []
-    total_intermedio_dividido = set()
-    aparece_socio = Inscripcion_Socio.objects.filter(inscripcion__finalizada = False).order_by("-asiento_bus").first()
-    if aparece_socio:
-        total = aparece_socio.asiento_bus + 1
-    else:
-        total = 0
 
-    aparece_socio_intermedio = Inscripcion_Socio.objects.filter(inscripcion__finalizada = False).order_by("asiento_bus")
-    j= 1
-    if len(aparece_socio_intermedio) > 0:
+    socio = Socios.objects.filter(id=socioid).first()
+    inscripcion = Inscripciones.objects.filter(finalizada=False).first()
 
-        for i in aparece_socio_intermedio:
-            primero = i.asiento_bus
-            for j in range(primero):
-                if aparece_socio_intermedio.filter(asiento_bus = j):
-                    pass
-                else:
-                    total_intermedio_dividido.add(j)
-        if len(total_intermedio_dividido) > 1:
-            total_intermedio_dividido = list(total_intermedio_dividido)
-            inicio = total_intermedio_dividido[1]
-            for x in range(1, len(total_intermedio_dividido)):
-                if total_intermedio_dividido[x] != total_intermedio_dividido[x-1]+1:
-                    total_intermedio.append((inicio, total_intermedio_dividido[x-1]))
-                    inicio = total_intermedio_dividido[x]
+    # ⚠️ SIEMPRE DEFINIDA
+    asientos_ocupados = list(
+        Inscripcion_Socio.objects
+        .filter(inscripcion=inscripcion)
+        .values_list('asiento_bus', flat=True)
+    )
 
-            total_intermedio.append((inicio, total_intermedio_dividido[-1]))
+    # Listas de asientos
+    asientos_bus_1 = list(range(1, 56))     # 1 - 55
+    asientos_bus_2 = list(range(56, 111))   # 56 - 110
 
+    primer_bus_lleno = len(
+        [a for a in asientos_ocupados if a <= 55]
+    ) >= 55
 
-    socio = Socios.objects.filter(id = socioid).first()
-    inscripcion = Inscripciones.objects.filter(finalizada = False).first()
-    if socio.socio is True:
+    # 💰 Precio inicial (GET)
+    if socio.socio:
         precio = inscripcion.precio_socio
     else:
         precio = inscripcion.precio_no_socio
+
     if request.method == 'POST':
         inscripcion_form = Inscripcion_SocioForm(request.POST)
 
         if inscripcion_form.is_valid():
-            if inscripcion_form.cleaned_data['guia'] is True:
+
+            es_guia = inscripcion_form.cleaned_data['guia']
+
+            # 🔥 PRECIO DEFINITIVO
+            if es_guia:
                 precio = 0
-
-            elif socio.socio is True:
+            elif socio.socio:
                 precio = inscripcion.precio_socio
-            elif socio.socio is False:
-                precio = inscripcion.precio_no_socio
-            asiento_bus = inscripcion_form.cleaned_data['asiento_bus']
-            inscripcion_socio = Inscripcion_Socio.objects.filter(inscripcion = inscripcion)
-            ocupado = any(i.asiento_bus == asiento_bus for i in inscripcion_socio)
-            repite = Inscripcion_Socio.objects.filter(inscripcion = inscripcion, socios = socio).count()
-            print(repite)
-            if repite != 0:
-                return render(request, 'socios/crearInscripcionSociob.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":"Usuario ya Inscripto en ruta", "total":total, "total_intermedio":total_intermedio})
-            if ocupado:
-                return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":"Asiento ocupado", "total":total, "total_intermedio":total_itermedio})
-            #elif asiento_bus < 21:
-
-            #    return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":"La Inscripción comienza a partir del asiento 21", "total":total, "total_itermedio":total_itermedio})
             else:
-                if asiento_bus <= 55:
-                    numero_bus = 1
-                else:
-                    numero_bus = 2
-                Inscripcion_Socio.objects.create(inscripcion = inscripcion, 
-                                    socios = socio, 
-                                    precio = precio, 
-                                    numero_bus = numero_bus, 
-                                    asiento_bus= asiento_bus,
-                                    pago = False,
-                                    guia = inscripcion_form.cleaned_data['guia'])
-            
+                precio = inscripcion.precio_no_socio
 
-            return redirect('Usuarios Inscritos',inscripcion.id)
-            
+            asiento_bus = inscripcion_form.cleaned_data['asiento_bus']
+
+            # VALIDACIONES
+            if asiento_bus in asientos_ocupados:
+                mensaje = "Asiento ocupado"
+
+            elif Inscripcion_Socio.objects.filter(
+                inscripcion=inscripcion,
+                socios=socio
+            ).exists():
+                mensaje = "Usuario ya inscrito en la ruta"
+
+            else:
+                numero_bus = 1 if asiento_bus <= 55 else 2
+
+                Inscripcion_Socio.objects.create(
+                    inscripcion=inscripcion,
+                    socios=socio,
+                    precio=precio,
+                    numero_bus=numero_bus,
+                    asiento_bus=asiento_bus,
+                    pago=False,
+                    guia=es_guia
+                )
+
+                return redirect('Usuarios Inscritos', inscripcion.id)
+
     else:
         inscripcion_form = Inscripcion_SocioForm()
 
-        return render(request, 'socios/crearInscripcionSocioB.html', {'formulario': inscripcion_form, "socio":socio, "inscripcion":inscripcion, "precio":precio, "mensaje":mensaje, "total":total, "total_intermedio":total_intermedio})
-    
+    # 👇 UN SOLO RENDER, VARIABLES GARANTIZADAS
+    return render(request, 'socios/crearInscripcionSocio.html', {
+        "formulario": inscripcion_form,
+        "socio": socio,
+        "inscripcion": inscripcion,
+        "precio": precio,
+        "mensaje": mensaje,
+        "asientos_ocupados": asientos_ocupados,
+        "asientos_bus_1": asientos_bus_1,
+        "asientos_bus_2": asientos_bus_2,
+        "primer_bus_lleno": primer_bus_lleno,
+    })
 
 def listar_inscritos(request, insid):
 
@@ -894,7 +935,7 @@ def buscar_socios_socios(request):
         else:
             user = user.upper()
             usuario = Socios.objects.filter(Q(apellidos__icontains=user)| Q(numero_socio__icontains=user),socio = True).order_by("numero_socio")
-            return render(request, "socios/busquedaSocioSocio.html", {"entity": usuario})
+            return render(request, "socios/busquedaSocioSocio.html", {"entity": usuario, "user":user})
     else:
         return redirect('Mostrar Usuarios Socios')
 
@@ -910,3 +951,21 @@ def reestablecer_usuarios(request):
 
 def confirmacion(request):
     return render(request, "socios/confirmacion.html")
+
+def generar_csv_socios(request):
+    socios = Socios.objects.all().order_by("apellidos")
+
+    # Crear la respuesta HTTP con el tipo de contenido adecuado
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="socios.csv"'
+
+    writer = csv.writer(response)
+    # Escribir la cabecera del CSV
+    writer.writerow(['Número de Socio', 'Nombre', 'Apellidos', 'DNI', 'Fecha de Nacimiento', 'Teléfono', 'Código Postal', 'Ciudad', 'Provincia', 'Socio', 'Regalo', 'Talla Camiseta'])
+
+    # Escribir los datos de los socios
+    for socio in socios:
+        writer.writerow([socio.numero_socio, socio.nombre, socio.apellidos, socio.dni, socio.fecha_nacimiento, socio.telefono, socio.codigo_postal, socio.ciudad, socio.provincia, socio.socio, socio.regalo, socio.talla_camiseta])
+
+    return response
+

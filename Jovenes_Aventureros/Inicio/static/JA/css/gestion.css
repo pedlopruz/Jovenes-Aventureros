@@ -6,6 +6,27 @@
   width: 100%;
 }
 
+.overlap-groupRegister {
+    background-color: transparent !important;
+}
+
+.bg-fondo {
+    background-image: url("../img/fondo_bosque.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+/* Capa blanca semi-transparente para que se lea el contenido */
+.site-overlay {
+    background-color: rgba(255,255,255,0.25); /* muy sutil */
+    backdrop-filter: blur(4px);                /* desenfoque del fondo */
+    -webkit-backdrop-filter: blur(4px);
+    min-height: 100vh;
+}
+
 .pgina-de-inicio .div {
   width: 1440px;
   height: 1024px;
@@ -563,17 +584,11 @@
 
 
 }
-.pgina-de-inicio .contenedorFormularioSocio{
-
-  background-color: white;
-  width: 120%;
-  border-radius: 5px;
-  padding: 1px 0px;
-  left: 120px;
-  margin-left: -50px;
-
-
-
+.contenedorFormularioSocio {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
 }
 
 

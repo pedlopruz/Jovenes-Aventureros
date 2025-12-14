@@ -1,53 +1,205 @@
 {% extends "jovenesAventureros/base.html" %}
-{% load crispy_forms_tags %}
+{% load static %}
 {% load widget_tweaks %}
 
-{% load static %}
-
 {% block content %}
-<p class="gestiones" style="font-size: 35px; margin-top: -25px;margin-left: 40px;">Inscripcion Socio</p>
-  <div class="overlap-groupRegister">
-  <div class="contenedorFormularioPerfil" style="width: 70%; margin-top: -2px;">
-    <form method="post" action="" style="color: rgb(9, 10, 11); text-align: center; margin-top: 30px;">
-        {% csrf_token %}
-        <div style="margin-top: 50px; color: rgba(26, 53, 199, 1); font-size: 30px; display: flex; flex-direction: column; align-items: center;">
-            {% if mensaje %}
-            <div style="color: red; margin-bottom: 20px;">{{ mensaje }}</div>
-            {% endif %}
-            <div style="display: flex; justify-content: space-around; width: 90%;">
-                <div style="width: 45%;">
-                    <div style="margin-left: -40px;">Nombre:<br></div>
-                    <div style="margin-left: -20px;">Apellidos:<br></div>
-                    <div style="margin-left: -40px;">Ruta:<br></div>
-                    <div style="margin-left: -40px;">Precio:<br></div> 
-                    <div style="margin-left: -40px;">Intermedios:<br></div>
-                    <div style="margin-left: -40px;">Último:<br></div>
-                    <div style="margin-left: -40px;">Seleccione Asiento:<br></div>
-                    <div style="margin-left: -40px;">Guia:<br></div>
 
+<div class="container mt-5">
+
+    <div class="content-box-table animate-fade">
+
+        <h2 class="titulo-usuarios">Inscripción a Ruta</h2>
+
+        <form method="post">
+        {% csrf_token %}
+
+        <div class="inscripcion-layout">
+
+            <!-- RESUMEN -->
+            <div class="resumen-socio">
+                <h3>Resumen</h3>
+                <p><b>{{ socio.nombre }} {{ socio.apellidos }}</b></p>
+                <p><b>Ruta:</b> {{ inscripcion.nombre }}</p>
+
+                <p>
+                    <b>Precio:</b>
+                    <span id="precio-texto">{{ precio }}</span> €
+                </p>
+
+                <!-- GUÍA -->
+                <div style="margin-top:12px;">
+                    <label style="font-weight:bold;">
+                        {{ formulario.guia }}
+                        Guía
+                    </label>
                 </div>
-                <div style="width: 45%;">
-                  <div style="margin-left: -230px;">{{socio.nombre}}</div>
-                  <div style="margin-left: -230px;">{{socio.apellidos}}</div>
-                  <div style="margin-left: -160px;">{{inscripcion.nombre}}</div>
-                  <div style="margin-left: -275px;">{{precio}}€</div>
-                  {% if total_intermedio %}
-                  <div style="margin-left: -160px; color: red;">{{total_intermedio|join:", " }}</div>
-                  <div style="margin-left: -275px; color: red;">{{total}}</div>
-                  {% else %}
-                  <div style="margin-left: -160px; color: red;">Sin asientos intermedios</div><br>
-                  <div style="margin-left: -275px; color: red;">{{total}}</div>
-                  {% endif %}
-                  <div style="margin-left: -220px; margin-bottom: 50px;">{{ formulario.asiento_bus|add_class:"small-input" }}</div>
-                  <div style="margin-left: -700px; margin-bottom: 30px;margin-top: -50px;">{{ formulario.guia|add_class:"bigger-input" }}</div>
+
+                {% if mensaje %}
+                    <p class="mensaje-error">{{ mensaje }}</p>
+                {% endif %}
+            </div>
+
+            <!-- BUS -->
+            <div class="bus-container">
+                <h3>Selecciona tu asiento</h3>
+
+                <div class="leyenda">
+                    <span><i class="libre-i"></i> Libre</span>
+                    <span><i class="ocupado-i"></i> Ocupado</span>
+                    <span><i class="sel-i"></i> Seleccionado</span>
+                </div>
+
+                <h4 class="bus-title">Bus 1</h4>
+                <div id="bus1" class="bus-horizontal"></div>
+
+                {% if asientos_ocupados|length >= 55 %}
+                <h4 class="bus-title">Bus 2</h4>
+                <div id="bus2" class="bus-horizontal"></div>
+                {% endif %}
+
+                <input type="hidden" name="asiento_bus" id="id_asiento_bus">
+
+                <div class="acciones">
+                    <button type="submit" class="boton">Inscribir</button>
+                    <a href="{% url 'Usuarios Inscritos' inscripcion.id %}" class="boton">Inscritos</a>
                 </div>
             </div>
+
         </div>
-        <button type="submit" class="btn btn-success" style="margin-top: -5px; margin-bottom: 15px;background-color:rgba(26, 53, 199, 1); border-radius: 10px; color: #FBF707; width: 25%;font-size: 20px;margin-left: 30px;">Inscribir</button>
-        <button type="submit" class="btn btn-success" style="margin-top: -5px; margin-bottom: 15px;background-color:rgba(26, 53, 199, 1); border-radius: 10px; color: #FBF707; width: 25%;font-size: 20px;margin-left: 20px;"><a href="{% url 'Usuarios Inscritos' inscripcion.id %}" style="color:  #FBF707">Inscritos</a></button>
-    </form>
-  </div>
-  </div>
-  <div class="boRE">
+        </form>
+
+    </div>
 </div>
-{% endblock %}  
+
+<style>
+/* ====== (ESTILOS ORIGINALES SIN CAMBIOS) ====== */
+.content-box-table {
+    background: rgba(255,255,255,0.75);
+    padding: 30px;
+    border-radius: 20px;
+    border: 3px solid rgba(26,53,199,1);
+    width: 115%;
+    margin-left: -7.5%;
+    box-shadow: 0 0 18px rgba(0,0,0,0.3);
+}
+.titulo-usuarios {
+    text-align: center;
+    font-size: 32px;
+    color: rgba(26,53,199,1);
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+.inscripcion-layout {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    align-items: flex-start;
+}
+.resumen-socio {
+    width: 260px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 16px;
+    padding: 18px;
+    border: 2px solid rgba(26,53,199,1);
+    box-shadow: 0 0 12px rgba(0,0,0,0.25);
+}
+.resumen-socio h3 { text-align:center; color: rgba(26,53,199,1); margin-bottom:12px; }
+.resumen-socio p { font-size: 14px; margin: 6px 0; }
+.mensaje-error { color: red; font-weight:bold; margin-top:10px; }
+.bus-container {
+    background: rgba(255,255,255,0.85);
+    border-radius: 18px;
+    padding: 20px;
+    border: 3px solid rgba(26,53,199,1);
+    box-shadow: 0 0 15px rgba(0,0,0,0.25);
+    max-width: 900px;
+}
+.bus-title { text-align:center; margin-top:12px; color: rgba(26,53,199,1); }
+.leyenda { display:flex; justify-content:center; gap:15px; font-size:13px; margin-bottom:10px; }
+.leyenda i { width:14px; height:14px; border-radius:4px; display:inline-block; }
+.libre-i { background:#4CAF50; }
+.ocupado-i { background:#E53935; }
+.sel-i { background:rgba(26,53,199,1); }
+.bus-horizontal { display:grid; grid-auto-flow: column; gap:10px; justify-content:center; margin-top:15px; }
+.columna-bus { display:grid; grid-template-rows: repeat(2, 38px) 28px repeat(2, 38px); gap:20px; }
+.asiento { width:38px; height:38px; line-height:38px; text-align:center; font-size:13px; border-radius:6px; font-weight:bold; cursor:pointer; user-select:none; }
+.asiento.libre { background:#4CAF50; color:white; }
+.asiento.ocupado { background:#E53935; color:white; cursor:not-allowed; }
+.asiento.seleccionado { background:rgba(26,53,199,1); color:#FBF707; }
+.acciones { display:flex; justify-content:center; gap:15px; margin-top:18px; }
+.boton { background: rgba(26,53,199,1); color:#FBF707; padding:9px 22px; font-size:15px; border-radius:10px; border:none; cursor:pointer; text-decoration:none; font-weight:bold; }
+.boton:hover { transform:scale(1.05); }
+.animate-fade { animation:fadeIn 0.7s ease-out; }
+@keyframes fadeIn { from {opacity:0; transform:translateY(15px);} to {opacity:1; transform:translateY(0);} }
+</style>
+
+<script>
+const ocupados = {{ asientos_ocupados|safe }};
+const precioBase = {{ precio }};
+const precioTexto = document.getElementById('precio-texto');
+const guiaCheckbox = document.getElementById('id_guia');
+
+/* PRECIO EN TIEMPO REAL */
+if (guiaCheckbox) {
+    guiaCheckbox.addEventListener('change', function () {
+        precioTexto.textContent = this.checked ? 0 : precioBase;
+    });
+}
+
+/* ====== BUSES (SIN CAMBIOS) ====== */
+/* BUS 1 */
+const columnasBus1 = [
+    [4,3,null,2,1],[8,7,null,6,5],[12,11,null,10,9],
+    [16,15,null,14,13],[20,19,null,18,17],[24,23,null,22,21],
+    [28,27,null,26,25],[32,31,null,30,29],
+    [null,null,null,34,33],
+    [38,37,null,36,35],[42,41,null,40,39],
+    [46,45,null,44,43],[50,49,null,48,47],
+    [55,54,53,52,51]
+];
+
+/* BUS 2 */
+const columnasBus2 = [
+    [59,58,null,57,56],[63,62,null,61,60],[67,66,null,65,64],
+    [71,70,null,69,68],[75,74,null,73,72],[79,78,null,77,76],
+    [83,82,null,81,80],[87,86,null,85,84],
+    [null,null,null,89,88],
+    [93,92,null,91,90],[97,96,null,95,94],
+    [101,100,null,99,98],[105,104,null,103,102],
+    [110,109,108,107,106]
+];
+
+function crearBus(id, columnas) {
+    const cont = document.getElementById(id);
+    if (!cont) return;
+    cont.innerHTML = '';
+    columnas.forEach(col => {
+        const colDiv = document.createElement('div');
+        colDiv.className = 'columna-bus';
+        col.forEach(num => {
+            if (num === null) colDiv.appendChild(document.createElement('div'));
+            else colDiv.appendChild(crearAsiento(num));
+        });
+        cont.appendChild(colDiv);
+    });
+}
+
+function crearAsiento(num) {
+    const div = document.createElement('div');
+    div.className = 'asiento ' + (ocupados.includes(num) ? 'ocupado' : 'libre');
+    div.textContent = num;
+    if (!ocupados.includes(num)) {
+        div.onclick = () => {
+            document.querySelectorAll('.asiento').forEach(a => a.classList.remove('seleccionado'));
+            div.classList.add('seleccionado');
+            document.getElementById('id_asiento_bus').value = num;
+        };
+    }
+    return div;
+}
+
+crearBus('bus1', columnasBus1);
+crearBus('bus2', columnasBus2);
+</script>
+
+{% endblock %}

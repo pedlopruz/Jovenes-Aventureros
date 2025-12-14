@@ -1,40 +1,123 @@
 {% extends "jovenesAventureros/base.html" %}
 {% load crispy_forms_tags %}
-
 {% load static %}
 
 {% block content %}
-<p class="gestiones" style="font-size: 35px; margin-top: -25px;margin-left: 100px;">Nueva Ruta</p>
-  <div class="overlap-groupRegister">
-  <div class="contenedorFormularioPerfil" style="width: 70%; margin-top: -2px;">
-    <form method="post" action="" style="color: rgb(9, 10, 11); text-align: center; margin-top: 30px;">
-        {% csrf_token %}
-        <div style="margin-top: 50px; color: rgba(26, 53, 199, 1); font-size: 30px; display: flex; flex-direction: column; align-items: center;">
+
+<div class="container mt-5">
+
+    <!-- CAJA SEMITRANSPARENTE ESTILO UNIFICADO -->
+    <div class="content-box-form animate-fade">
+
+        <h2 class="titulo-usuarios">Nueva Ruta</h2>
+
+        <form method="post" action="" class="form-ruta">
+            {% csrf_token %}
+
             {% if mensaje %}
-            <div style="color: red; margin-bottom: 20px;">{{ mensaje }}</div>
+            <div class="mensaje-error">{{ mensaje }}</div>
             {% endif %}
-            <div style="display: flex; justify-content: space-around; width: 90%;">
-                <div style="width: 45%;">
+
+            <div class="form-grid">
+
+                <div class="form-col">
                     {{ formulario.nombre|as_crispy_field }}
                     {{ formulario.distancia|as_crispy_field }}
                     {{ formulario.precio_socio|as_crispy_field }}
                 </div>
-                <div style="width: 45%;">
+
+                <div class="form-col">
                     {{ formulario.destino|as_crispy_field }}
-                    <br><br>
-                    <br><br>
                 </div>
-                <div style="width: 45%;">
-                    {{formulario.fecha|as_crispy_field }}
+
+                <div class="form-col">
+                    {{ formulario.fecha|as_crispy_field }}
                     {{ formulario.dificultad|as_crispy_field }}
                     {{ formulario.precio_no_socio|as_crispy_field }}
                 </div>
+
             </div>
-        </div>
-        <button type="submit" class="btn btn-success" style="margin-top: -5px; margin-bottom: 15px;background-color:rgba(26, 53, 199, 1); border-radius: 10px; color: #FBF707; width: 90%;font-size: 20px;">Registro</button>
-    </form>
-  </div>
-  </div>
-  <div class="boRE">
+
+            <button type="submit" class="btn-submit">Registrar Ruta</button>
+
+        </form>
+    </div>
+
 </div>
-{% endblock %}  
+
+<style>
+
+/* CAJA SEMITRANSPARENTE IGUAL QUE LAS TABLAS */
+.content-box-form {
+    background: rgba(255,255,255,0.75);
+    padding: 30px;
+    border-radius: 20px;
+    border: 3px solid rgba(26,53,199,1);
+    box-shadow: 0 0 15px rgba(0,0,0,0.25);
+
+    width: 80%;
+    margin-left: 10%;
+    margin-top: -10px;
+}
+
+/* TÍTULO */
+.titulo-usuarios {
+    text-align: center;
+    font-size: 35px;
+    color: rgba(26,53,199,1);
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+/* MENSAJE DE ERROR */
+.mensaje-error {
+    color: red;
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* GRID DEL FORMULARIO */
+.form-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+}
+
+.form-col {
+    width: 33%;
+}
+
+/* BOTÓN SUBMIT */
+.btn-submit {
+    background-color: rgba(26,53,199,1);
+    color: #FBF707;
+    width: 90%;
+    display: block;
+    margin: 25px auto 10px auto;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: bold;
+    transition: 0.25s;
+    border: none;
+}
+
+.btn-submit:hover {
+    transform: scale(1.05);
+    background-color: rgb(18, 37, 150);
+}
+
+/* ANIMACIÓN */
+.animate-fade {
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+</style>
+
+{% endblock %}

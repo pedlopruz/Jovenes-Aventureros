@@ -1,73 +1,212 @@
 {% extends "jovenesAventureros/base.html" %}
 {% load crispy_forms_tags %}
-
 {% load static %}
 
 {% block content %}
-  <div class="overlap-groupRegister">
-    <p class="gestiones" style="font-size: 25px; margin-left: -670px; margin-top: -340px;">Usuarios Socios</p>
-    <form action="mostrarUsuariosSocios/buscar/" method="GET" style="margin-left: 880px; margin-top: -30px;margin-bottom: 20px;">
-      <input type="text" name="usern">
-      <button class="btn2 btn-success" style="background-color: #FBF707;color: rgba(26, 53, 199, 1);">Buscar Socio</button>
-  </form>
-  <div class="contenedorFormularioSocio">
-    <table class ="table" style="margin-left: -70px; margin-top: 0px;">
-        <thead>
-          <tr>
-            <th class="th">Nº Socio</th>
-            <th class="th">Socio</th>
-            <th class="th">Apellidos</th>
-            <th class="th">Nombre</th>
-            <th class="th">DNI</th>
-            <th class="th">Fecha</th>
-            <th class="th">Telefono</th>
-            <th class="th">Ciudad</th>
-            <th class="th">Provincia</th>
-            <th class="th">Talla</th>
-            <th class="th">Regalo</th>
-            <th class="th">Actualizar Socios</th>
-            {% if num_inscripcion != 0 %}
-            <th class="th">Inscribir a Ruta</th>
-            {% endif %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for socio in entity %}
-            <tr>
-              <td class="td">{{ socio.numero_socio}}</td>
-              {% if socio.socio is False %}
-              <td class="tdr"></td>
-              {% else %}
-              <td class="tdv"></td>
-              {% endif %}
-              <td class="td">{{ socio.apellidos}}</td>
-              <td class="td">{{ socio.nombre}}</td>
-              <td class="td">{{ socio.dni }}</td>
-              <td class="td">{{ socio.fecha_nacimiento }}</td>
-              <td class="td">{{ socio.telefono }}</td>
-              <td class="td">{{ socio.ciudad }}</td>
-              <td class="td">{{ socio.provincia }}</td>
-              <td class="td">{{ socio.talla_camiseta }}</td>
-              {% if socio.regalo is False %}
-              <td class="tdr" style="color: aliceblue;"></td>
-              {% else %}
-              <td class="tdv" style="color: aliceblue;"></td>
-              {% endif %}
-              <td class="td">
-              <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Actualizar Socios' socio.id %}" style="color: rgba(26, 53, 199, 1);">Actualizar Socio</a></button>
-              </td>
-              {% if num_inscripcion != 0 %}
-              <td class="td">
-                <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Inscribir Socios' socio.id %}" style="color: rgba(26, 53, 199, 1);">Metálico</a></button>
-                <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Inscribir Socios B' socio.id %}" style="color: rgba(26, 53, 199, 1);">Banco</a></button>
-              </td>
-              {% endif %}
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      
-      
-  </div>
-  </div>
-{% endblock %}  
+
+<div class="container mt-5">
+
+    <!-- CAJA SEMITRANSPARENTE AMPLIA -->
+    <div class="content-box-table animate-fade">
+
+        <h2 class="titulo-usuarios">Socios</h2>
+
+        <!-- BUSCADOR -->
+        <form action="mostrarUsuariosSocios/buscar/" method="GET" class="search-row">
+            <input type="text" name="usern" class="form-control search-input" placeholder="Buscar Socio">
+            <button class="btn search-btn">Buscar</button>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table custom-table">
+                <thead>
+                    <tr>
+                        <th>Nº Socio</th>
+                        <th>Socio</th>
+                        <th>Apellidos</th>
+                        <th>Nombre</th>
+                        <th>DNI</th>
+                        <th>Fecha</th>
+                        <th>Teléfono</th>
+                        <th>Ciudad</th>
+                        <th>Provincia</th>
+                        <th>Talla</th>
+                        <th>Regalo</th>
+                        <th>Actualizar</th>
+                        <th>Eliminar</th>
+                        {% if num_inscripcion != 0 %}
+                        <th>Inscribir</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for socio in entity %}
+                    <tr>
+                        <td>{{ socio.numero_socio }}</td>
+
+                        <td>
+                            {% if socio.socio %}
+                                <span class="estado estado-ok"></span>
+                            {% else %}
+                                <span class="estado estado-no"></span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ socio.apellidos }}</td>
+                        <td>{{ socio.nombre }}</td>
+                        <td>{{ socio.dni }}</td>
+                        <td>{{ socio.fecha_nacimiento }}</td>
+                        <td>{{ socio.telefono }}</td>
+                        <td>{{ socio.ciudad }}</td>
+                        <td>{{ socio.provincia }}</td>
+                        <td>{{ socio.talla_camiseta }}</td>
+
+                        <td>
+                            {% if socio.regalo %}
+                                <span class="estado estado-ok"></span>
+                            {% else %}
+                                <span class="estado estado-no"></span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a href="{% url 'Actualizar Socios' socio.id %}" class="btn-table">Actualizar</a>
+                        </td>
+
+                        <td>
+                            <a href="{% url 'Eliminar Usuario' socio.id %}" class="btn-table">Eliminar</a>
+                        </td>
+
+                        {% if num_inscripcion != 0 %}
+                        <td>
+                            <a href="{% url 'Inscribir Socios' socio.id %}" class="btn-table">Metálico</a>
+                            <a href="{% url 'Inscribir Socios B' socio.id %}" class="btn-table">Banco</a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+/* CAJA SEMITRANSPARENTE AMPLIA */
+.content-box-table {
+    background: rgba(255,255,255,0.75);
+    padding: 25px;
+    border-radius: 20px;
+    border: 3px solid rgba(26,53,199,1);
+    box-shadow: 0 0 15px rgba(0,0,0,0.25);
+
+    width: 115%;       /* MÁS ANCHA QUE ANTES */
+    margin-left: -7.5%; /* Centrando la caja más ancha */
+    margin-top: -20px;
+}
+
+/* TÍTULO */
+.titulo-usuarios {
+    text-align: center;
+    font-size: 32px;
+    color: rgba(26,53,199,1);
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* BUSCADOR */
+.search-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 300px;
+}
+
+.search-btn {
+    font-weight: bold;
+    background: #FBF707;
+    color: rgba(26,53,199,1);
+    border-radius: 10px;
+    padding: 6px 15px;
+}
+
+/* TABLA PERSONALIZADA */
+.custom-table {
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 0 12px rgba(0,0,0,0.2);
+    width: 100%;
+}
+
+.custom-table thead {
+    background: rgba(26,53,199,1);
+    color: #FBF707;
+}
+
+.custom-table th {
+    text-align: center;
+    padding: 12px;
+    font-size: 14px;
+}
+
+.custom-table td {
+    text-align: center;
+    background: rgba(255,255,255,0.9);
+    padding: 8px;
+    font-size: 13px;
+}
+
+.custom-table tbody tr:hover {
+    background-color: rgba(26,53,199,0.15);
+    transform: scale(1.01);
+    transition: 0.25s;
+}
+
+/* ICONOS SOCIO/REGALO */
+.estado {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+}
+.estado-ok { background: green; }
+.estado-no { background: red; }
+
+/* BOTONES UNIFICADOS */
+.btn-table {
+    background-color: #FBF707;
+    color: rgba(26,53,199,1);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    display: inline-block;
+    margin: 2px;
+    transition: 0.2s;
+}
+.btn-table:hover {
+    background-color: rgb(247, 247, 50);
+    transform: scale(1.07);
+}
+
+/* ANIMACIÓN */
+.animate-fade {
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+</style>
+
+{% endblock %}

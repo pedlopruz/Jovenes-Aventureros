@@ -1,57 +1,181 @@
 {% extends "jovenesAventureros/base.html" %}
 {% load crispy_forms_tags %}
-
 {% load static %}
 
 {% block content %}
-  <div class="overlap-groupRegister">
-    <p class="gestiones" style="font-size: 25px; margin-left: -660px; margin-top: -340px;">Ruta "{{nombre}}"</p>
-  <div class="contenedorFormularioSocio">
-    <table class ="table" style="margin-left: -70px; margin-top: 0px;">
-      <thead>
-        <tr>
-          <th class="th">Nº Socio</th>
-          <th class="th">Socio</th>
-          <th class="th">P/B</th>
-          <th class="th">Apellidos</th>
-          <th class="th">Nombre</th>
-          <th class="th">Nº Bus</th>
-          <th class="th">Nº Asiento</th>
-          <th class="th">Ticket</th>
-          <th class="th">Eliminar</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for ins in entity %}
-          <tr>
-            <td class="td">{{ ins.socios.numero_socio }}</td>
-            {% if ins.socios.socio is False %}
-              <td class="tdr"></td>
-              {% else %}
-              <td class="tdv"></td>
-              {% endif %}
-            {% if ins.pago is False %}
-              <td class="tde"></td>
-              {% else %}
-              <td class="tdv"></td>
-              {% endif %}
-            <td class="td">{{ ins.socios.apellidos }}</td>
-            <td class="td">{{ ins.socios.nombre }}</td>
-            <td class="td">{{ ins.numero_bus }}</td>
-            <td class="td">{{ ins.asiento_bus }}</td>
-            <td class="td">
-              <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Exportar Ticket V2' ins.inscripcion.id ins.socios.id%}" style="color: rgba(26, 53, 199, 1);">Imprimir</a></button>
-            </td>
-            <td class="td">
-              <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Eliminar Socio Inscripcion' ins.inscripcion.id ins.socios.id%}" style="color: rgba(26, 53, 199, 1);">Borrar</a></button>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-     
-      
-  </div>
-  </div>
 
-{% endblock %}  
+<div class="container mt-5">
+
+    <!-- CAJA SEMITRANSPARENTE -->
+    <div class="content-box-table animate-fade">
+
+        <!-- TÍTULO -->
+        <h2 class="titulo-usuarios">Ruta "{{ nombre }}"</h2>
+
+        <!-- TABLA -->
+        <table class="table custom-table">
+            <thead>
+                <tr>
+                    <th>Nº Socio</th>
+                    <th>Socio</th>
+                    <th>P/B</th>
+                    <th>Apellidos</th>
+                    <th>Nombre</th>
+                    <th>Nº Bus</th>
+                    <th>Nº Asiento</th>
+                    <th>Ticket</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ins in entity %}
+                <tr>
+                    <td>{{ ins.socios.numero_socio }}</td>
+
+                    <!-- SOCIO -->
+                    <td>
+                        {% if ins.socios.socio %}
+                            <span class="estado estado-ok"></span>
+                        {% else %}
+                            <span class="estado estado-no"></span>
+                        {% endif %}
+                    </td>
+
+                    <!-- PAGO -->
+                    <td>
+                        {% if ins.pago %}
+                            <span class="estado estado-ok"></span>
+                        {% else %}
+                            <span class="estado estado-no"></span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ ins.socios.apellidos }}</td>
+                    <td>{{ ins.socios.nombre }}</td>
+                    <td>{{ ins.numero_bus }}</td>
+                    <td>{{ ins.asiento_bus }}</td>
+
+                    <!-- TICKET -->
+                    <td>
+                        <a href="{% url 'Exportar Ticket V2' ins.inscripcion.id ins.socios.id %}" class="btn-table">
+                            Imprimir
+                        </a>
+                    </td>
+
+                    <!-- ELIMINAR -->
+                    <td>
+                        <a href="{% url 'Eliminar Socio Inscripcion' ins.inscripcion.id ins.socios.id %}" class="btn-table btn-danger">
+                            Borrar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<style>
+/* CAJA SEMITRANSPARENTE */
+.content-box-table {
+    background: rgba(255,255,255,0.75);
+    padding: 30px;
+    border-radius: 20px;
+    border: 3px solid rgba(26,53,199,1);
+    width: 115%;
+    margin-left: -7.5%;
+    margin-top: -20px;
+    box-shadow: 0 0 18px rgba(0,0,0,0.3);
+}
+
+/* TÍTULO */
+.titulo-usuarios {
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    color: rgba(26,53,199,1);
+    margin-bottom: 25px;
+}
+
+/* TABLA */
+.custom-table {
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 12px rgba(0,0,0,0.25);
+}
+
+.custom-table thead {
+    background: rgba(26,53,199,1);
+    color: #FBF707;
+}
+
+.custom-table th {
+    text-align: center;
+    padding: 12px;
+    font-size: 15px;
+}
+
+.custom-table td {
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    background: rgba(255,255,255,0.95);
+}
+
+.custom-table tbody tr:hover {
+    background-color: rgba(26,53,199,0.12);
+    transition: 0.2s;
+}
+
+/* ESTADOS */
+.estado {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+.estado-ok {
+    background: green;
+}
+
+.estado-no {
+    background: red;
+}
+
+/* BOTONES */
+.btn-table {
+    background-color: #FBF707;
+    color: rgba(26,53,199,1);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    display: inline-block;
+    transition: 0.2s;
+}
+
+.btn-table:hover {
+    transform: scale(1.08);
+    background-color: rgb(247,247,60);
+}
+
+.btn-danger {
+    background-color: #ffb3b3;
+}
+
+/* ANIMACIÓN */
+.animate-fade {
+    animation: fadeIn 0.7s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+{% endblock %}

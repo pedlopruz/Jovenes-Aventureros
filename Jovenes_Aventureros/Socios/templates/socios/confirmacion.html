@@ -1,16 +1,112 @@
 {% extends "jovenesAventureros/base.html" %}
-{% load crispy_forms_tags %}
-
 {% load static %}
 
 {% block content %}
-  <div class="overlap-groupRegister">
-  <div class="contenedorFormularioPerfil"style="width: 70%; margin-top: -2px;">
-    <h1 style="color: rgba(26, 53, 199, 1); margin-left:150px; margin-right:auto;">Desea Realiza el Borrado Anual</h1>
-    <button type="submit" class="btn btn-success" style="margin-bottom: 20px;background-color: rgb(3, 144, 27); border-radius: 10px; color: white; margin-left:300px;padding: 10px 15px;"><a href="{% url 'Reestablecer Usuario' %}" style="color: aliceblue;">Aceptar</a></button>
-    <button type="submit" class="btn btn-success" style="margin-bottom: 20px;background-color: rgb(236, 16, 16); border-radius: 10px; color: white; margin-left:53px;padding: 10px 15px;"><a href="{% url 'Incripciones Cerradas' %}" style="color: aliceblue;">Cancelar</a></button>
-  </div>
-  </div>
-  <div class="boRE">
+
+<div class="container mt-5">
+
+    <!-- CAJA SEMITRANSPARENTE -->
+    <div class="content-box-confirm animate-fade">
+
+        <h2 class="titulo-confirmacion">¿Desea realizar el borrado anual?</h2>
+
+        <p class="texto-confirmacion">
+            Esta acción eliminará los datos anuales de los socios.<br>
+            <b>Esta operación no se puede deshacer.</b>
+        </p>
+
+        <div class="acciones-confirmacion">
+            <a href="{% url 'Reestablecer Usuario' %}" class="btn-confirm btn-ok">
+                Aceptar
+            </a>
+
+            <a href="{% url 'Incripciones Cerradas' %}" class="btn-confirm btn-cancel">
+                Cancelar
+            </a>
+        </div>
+
+    </div>
+
 </div>
-{% endblock %}  
+
+<style>
+/* ===== CAJA PRINCIPAL ===== */
+.content-box-confirm {
+    background: rgba(255,255,255,0.75);
+    padding: 40px;
+    border-radius: 20px;
+    border: 3px solid rgba(26,53,199,1);
+    max-width: 650px;
+    margin: 0 auto;
+    text-align: center;
+    box-shadow: 0 0 18px rgba(0,0,0,0.3);
+}
+
+/* ===== TITULO ===== */
+.titulo-confirmacion {
+    color: rgba(26,53,199,1);
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* ===== TEXTO ===== */
+.texto-confirmacion {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 35px;
+    line-height: 1.5;
+}
+
+/* ===== ACCIONES ===== */
+.acciones-confirmacion {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+/* ===== BOTONES ===== */
+.btn-confirm {
+    padding: 14px 28px;
+    font-size: 18px;
+    border-radius: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.25s;
+    min-width: 150px;
+}
+
+/* ACEPTAR */
+.btn-ok {
+    background: rgb(3, 144, 27);
+    color: white;
+}
+
+.btn-ok:hover {
+    background: rgb(2, 120, 22);
+    transform: scale(1.08);
+}
+
+/* CANCELAR */
+.btn-cancel {
+    background: rgb(236, 16, 16);
+    color: white;
+}
+
+.btn-cancel:hover {
+    background: rgb(200, 10, 10);
+    transform: scale(1.08);
+}
+
+/* ===== ANIMACION ===== */
+.animate-fade {
+    animation: fadeIn 0.7s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+{% endblock %}

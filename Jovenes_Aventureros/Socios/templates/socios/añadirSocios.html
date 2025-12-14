@@ -4,39 +4,132 @@
 {% load static %}
 
 {% block content %}
-<p class="gestiones" style="font-size: 35px; margin-top: -25px;margin-left: 40px;">Registrar Socio</p>
-  <div class="overlap-groupRegister">
-  <div class="contenedorFormularioPerfil" style="width: 70%; margin-top: -2px;">
-    <form method="post" action="" style="color: rgb(9, 10, 11); text-align: center; margin-top: 30px;">
+
+<div class="content-box-form">
+
+    <!-- TÍTULO DENTRO DE LA CAJA -->
+    <p class="gestiones-titulo-interno">Registrar Socio</p>
+
+    <form method="post" action="">
         {% csrf_token %}
-        <div style="margin-top: 50px; color: rgba(26, 53, 199, 1); font-size: 30px; display: flex; flex-direction: column; align-items: center;">
-            {% if mensaje %}
-            <div style="color: red; margin-bottom: 20px;">{{ mensaje }}</div>
-            {% endif %}
-            <div style="display: flex; justify-content: space-around; width: 90%;">
-                <div style="width: 45%;">
-                    {{ formulario.nombre|as_crispy_field }}
-                    {{ formulario.dni|as_crispy_field }}
-                    {{ formulario.ciudad|as_crispy_field }}
-                    {{ formulario.talla_camiseta|as_crispy_field }}
-                </div>
-                <div style="width: 45%;">
-                    <br><br>
-                    <div style="margin-top: 17px;">{{ formulario.fecha_nacimiento|as_crispy_field }}
-                    {{ formulario.provincia|as_crispy_field }}</div>
-                </div>
-                <div style="width: 45%;">
-                    {{formulario.apellidos|as_crispy_field }}
-                    {{ formulario.telefono|as_crispy_field }}
-                    {{ formulario.codigo_postal|as_crispy_field }}
-                    <div style="margin-top: 30px;">Socio &nbsp;{{ formulario.socio|add_class:"bigger-input" }}</div>
+
+        <!-- mensaje de error -->
+        {% if mensaje %}
+        <div class="mensaje-error">{{ mensaje }}</div>
+        {% endif %}
+
+        <!-- Grid de formulario -->
+        <div class="form-grid">
+
+            <div class="form-col">
+                {{ formulario.nombre|as_crispy_field }}
+                {{ formulario.dni|as_crispy_field }}
+                {{ formulario.ciudad|as_crispy_field }}
+                {{ formulario.talla_camiseta|as_crispy_field }}
+            </div>
+
+            <div class="form-col">
+                <br><br>
+                {{ formulario.fecha_nacimiento|as_crispy_field }}
+                {{ formulario.provincia|as_crispy_field }}
+            </div>
+
+            <div class="form-col">
+                {{ formulario.apellidos|as_crispy_field }}
+                {{ formulario.telefono|as_crispy_field }}
+                {{ formulario.codigo_postal|as_crispy_field }}
+
+                <div class="socio-row">
+                    Socio &nbsp; {{ formulario.socio|add_class:"bigger-input" }}
                 </div>
             </div>
+
         </div>
-        <button type="submit" class="btn btn-success" style="margin-top: -5px; margin-bottom: 15px;background-color:rgba(26, 53, 199, 1); border-radius: 10px; color: #FBF707; width: 90%;font-size: 20px;">Registro</button>
+
+        <button type="submit" class="btn-submit">Registrar</button>
     </form>
-  </div>
-  </div>
-  <div class="boRE">
 </div>
-{% endblock %}  
+
+<style>
+
+    /* Caja semitransparente */
+    .content-box-form {
+        background: rgba(255,255,255,0.80);
+        border-radius: 20px;
+        border: 3px solid rgba(26,53,199,1);
+        padding: 40px;
+        width: 90%;
+        margin: 30px auto;
+        margin-top: -40px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.25);
+        animation: fadeInUp 0.7s ease;
+    }
+
+    /* Título dentro de la caja */
+    .gestiones-titulo-interno {
+        font-size: 34px;
+        color: rgba(26,53,199,1);
+        font-weight: bold;
+        text-align: center;
+        margin-top: -10px;
+        margin-bottom: 25px;
+        text-shadow: 2px 2px 4px white;
+    }
+
+    /* Animación suave */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mensaje de error */
+    .mensaje-error {
+        color: red;
+        font-size: 18px;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    /* Formulario en grid moderno */
+    .form-grid {
+        display: flex;
+        justify-content: space-between;
+        gap: 25px;
+        margin-top: 15px;
+    }
+
+    .form-col {
+        width: 33%;
+    }
+
+    .socio-row {
+        margin-top: 20px;
+        font-size: 20px;
+        color: rgba(26,53,199,1);
+        font-weight: bold;
+    }
+
+    /* Botón */
+    .btn-submit {
+        background-color: rgba(26, 53, 199, 1);
+        border-radius: 12px;
+        color: #FBF707;
+        width: 95%;
+        margin: 25px auto 5px;
+        margin-top: -5px;
+        display: block;
+        font-size: 22px;
+        padding: 10px 0;
+        font-weight: bold;
+        box-shadow: 0 0 8px rgba(0,0,0,0.3);
+        transition: 0.2s;
+    }
+
+    .btn-submit:hover {
+        transform: scale(1.03);
+        background-color: rgba(20,42,150,1);
+    }
+
+</style>
+
+{% endblock %}

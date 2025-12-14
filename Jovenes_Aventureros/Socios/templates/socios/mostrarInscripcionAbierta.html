@@ -1,72 +1,213 @@
 {% extends "jovenesAventureros/base.html" %}
-{% load crispy_forms_tags %}
-
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
-<div class="overlap-groupRegister">
-  <p class="gestiones" style="font-size: 25px; margin-left: -660px; margin-top: -345px;">Ruta Activa</p>
-  <div class="contenedorFormularioSocio">
-    <table class ="table" style="margin-left: -70px; margin-top: 0px;">
-        <thead>
-          <tr>
-            <th class="th">Nombre</th>
-            <th class="th">Destino</th>
-            <th class="th">Fecha</th>
-            <th class="th">Distancia</th>
-            <th class="th">Dificultad</th>
-            <th class="th">Precio Socio</th>
-            <th class="th">Precio No Socio</th>
-            <th class="th">Recaudación Metálico</th>
-            <th class="th">Recaudación Banco</th>
-            <th class="th">Nº/PS</th>
-            <th class="th">Nº/PNS</th>
-            <th class="th">Personas Pago Metálico</th>
-            <th class="th">Personas Pago Banco</th>
-            <th class="th">Actualizar Ruta</th>
-            <th class="th">Inscritos</th>
-            <th class="th">Cerrar Inscripción</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for ins in entity %}
-            <tr>
-              <td class="td">{{ ins.nombre }}</td>
-              <td class="td">{{ ins.destino }}</td>
-              <td class="td">{{ ins.fecha }}</td>
-              <td class="td">{{ ins.distancia }}Km</td>
-              <td class="td">{{ ins.dificultad }}</td>
-              <td class="td">{{ ins.precio_socio }}€</td>
-              <td class="td">{{ ins.precio_no_socio }}€</td>
-              <td class="td">{{ ins.recaudacion_metalico }}€</td>
-              <td class="td">{{ ins.recaudacion_banco }}€</td>
-              <td class="td">{{ ins.total_socios }}</td>
-              <td class="td">{{ ins.total_no_socios }}</td>
-              <td class="td">{{ ins.pago_metalico }}</td>
-              <td class="td">{{ ins.pago_banco }}</td>
-              <td class="td">
-              <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Actualizar Inscripcion' ins.id %}" style="color: rgba(26, 53, 199, 1);">Actualizar Inscripción</a></button>
-              </td>
-              <td class="td">
-                <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Usuarios Inscritos' ins.id %}" style="color: rgba(26, 53, 199, 1);">Inscritos</a></button>
-            </td>
-              <td class="td">
-                <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Cerrar Inscripcion' %}" style="color: rgba(26, 53, 199, 1);">Finalizar Inscripción</a></button>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% if total == 0 %}
-      <button type="submit" class="btn2 btn-success" style="margin-top: 20px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:1040px;padding: 10px 15px;"><a href="{% url 'Crear Inscripcion' %}" style="color: rgba(26, 53, 199, 1);">Activar Ruta</a></button><button type="submit" class="btn2 btn-success" style="margin-top: 20px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:1040px;padding: 10px 15px;"><a href="{% url 'Incripciones Cerradas' %}" style="color: rgba(26, 53, 199, 1);">Rutas Realizadas</a></button>
-      {% else %}
-      <button type="submit" class="btn2 btn-success" style="margin-top: 20px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:1120px;padding: 10px 15px;"><a href="{% url 'Incripciones Cerradas' %}" style="color: rgba(26, 53, 199, 1);">Rutas Realizadas</a></button>
-      {% endif %}
-     
-      
-  </div>
-  </div>
-  <div class="boCc">
+<div class="container mt-5">
+
+    <div class="content-box-route animate-fade">
+
+        <h2 class="titulo-usuarios">Ruta Activa</h2>
+
+        {% for ins in entity %}
+
+        <!-- SECCIÓN 1: INFORMACIÓN GENERAL -->
+        <div class="route-section">
+            <h3 class="section-title">Información de la Ruta</h3>
+
+            <div class="info-grid">
+                <div><strong>Nombre:</strong> {{ ins.nombre }}</div>
+                <div><strong>Destino:</strong> {{ ins.destino }}</div>
+                <div><strong>Fecha:</strong> {{ ins.fecha }}</div>
+                <div><strong>Distancia:</strong> {{ ins.distancia }} km</div>
+                <div><strong>Dificultad:</strong> {{ ins.dificultad }}</div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: PRECIOS Y RECAUDACIÓN -->
+        <div class="route-section">
+            <h3 class="section-title">Precios & Recaudación</h3>
+
+            <div class="info-grid">
+                <div><strong>Precio Socio:</strong> {{ ins.precio_socio }} €</div>
+                <div><strong>Precio No Socio:</strong> {{ ins.precio_no_socio }} €</div>
+                <div><strong>Recaudación Metálico:</strong> {{ ins.recaudacion_metalico }} €</div>
+                <div><strong>Recaudación Banco:</strong> {{ ins.recaudacion_banco }} €</div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: RESUMEN DE PERSONAS -->
+        <div class="route-section">
+            <h3 class="section-title">Participación</h3>
+
+            <div class="people-grid">
+
+                <div class="card-info">
+                    <span class="label">Socios inscritos</span>
+                    <span class="value">{{ ins.total_socios }}</span>
+                </div>
+
+                <div class="card-info">
+                    <span class="label">No socios inscritos</span>
+                    <span class="value">{{ ins.total_no_socios }}</span>
+                </div>
+
+                <div class="card-info">
+                    <span class="label">Pago Metálico</span>
+                    <span class="value">{{ ins.pago_metalico }}</span>
+                </div>
+
+                <div class="card-info">
+                    <span class="label">Pago Banco</span>
+                    <span class="value">{{ ins.pago_banco }}</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- BOTONES DE ACCIÓN -->
+        <div class="button-area">
+
+            <a href="{% url 'Actualizar Inscripcion' ins.id %}" class="btn-action">Actualizar Inscripción</a>
+
+            <a href="{% url 'Usuarios Inscritos' ins.id %}" class="btn-action">Ver Inscritos</a>
+
+            <a href="{% url 'Cerrar Inscripcion' %}" class="btn-action btn-danger">Finalizar Inscripción</a>
+
+        </div>
+
+        {% endfor %}
+
+        <!-- BOTONES INFERIORES -->
+        <div class="button-area mt-4">
+
+            {% if total == 0 %}
+            <a href="{% url 'Crear Inscripcion' %}" class="btn-action">Activar Nueva Ruta</a>
+            {% endif %}
+
+            <a href="{% url 'Incripciones Cerradas' %}" class="btn-action">Rutas Realizadas</a>
+
+        </div>
+
+    </div>
 </div>
-{% endblock %}  
+
+<style>
+
+/* CAJA PRINCIPAL */
+.content-box-route {
+    background: rgba(255,255,255,0.8);
+    padding: 30px;
+    border-radius: 25px;
+    border: 3px solid rgba(26,53,199,1);
+    box-shadow: 0 0 20px rgba(0,0,0,0.25);
+    width: 85%;
+    margin-left: 7.5%;
+}
+
+/* TÍTULO */
+.titulo-usuarios {
+    text-align: center;
+    font-size: 38px;
+    font-weight: bold;
+    color: rgba(26,53,199,1);
+    margin-bottom: 25px;
+}
+
+/* TÍTULOS DE SECCIÓN */
+.section-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: rgba(26,53,199,1);
+    margin-bottom: 15px;
+}
+
+/* SECCIONES */
+.route-section {
+    background: rgba(255,255,255,0.9);
+    padding: 20px;
+    border-radius: 15px;
+    border-left: 6px solid rgba(26,53,199,1);
+    margin-bottom: 25px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+/* GRID INFORMACIÓN */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 12px;
+    column-gap: 20px;
+    font-size: 17px;
+}
+
+/* TARJETAS DE PERSONAS */
+.people-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.card-info {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    border: 2px solid rgba(26,53,199,1);
+    box-shadow: 0 0 8px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.card-info .label {
+    display: block;
+    font-size: 15px;
+    color: #444;
+}
+
+.card-info .value {
+    font-size: 26px;
+    font-weight: bold;
+    color: rgba(26,53,199,1);
+}
+
+/* BOTONES */
+.button-area {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.btn-action {
+    background: #FBF707;
+    color: rgba(26,53,199,1);
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.25s;
+}
+
+.btn-action:hover {
+    transform: scale(1.07);
+    background: rgb(250, 250, 40);
+}
+
+.btn-danger {
+    background: red !important;
+    color: white !important;
+}
+
+/* ANIMACIÓN */
+.animate-fade {
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+</style>
+
+{% endblock %}

@@ -1,27 +1,143 @@
 {% extends "jovenesAventureros/base.html" %}
-{% load crispy_forms_tags %}
-
 {% load static %}
 
 {% block content %}
-  <div class="overlap-groupRegister">
-    <p class="gestiones" style="font-size: 25px; margin-left: -660px; margin-top: -345px;">Gestión de Usuarios</p>
-    <form action="buscar/" method="GET" style="margin-left: 990px; margin-top: -35px;">
-      <input type="text" name="usern">
-      <button class="btn2 btn-success" style="background-color: #FBF707;color: rgba(26, 53, 199, 1);margin-left: 325px; width: 130px;transform: translate(-100%, -100%);">Buscar Usuario</button>
-  </form>
-  <button type="submit" class="btn2 btn-success" style="margin-top: 10px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:1100px;padding: 10px 15px;"><a href="{% url 'Crear Socios' %}" style="color: rgba(26, 53, 199, 1);">Inscribir Usuario</a></button>
-  <div style="position: relative; margin-top: 200px;">
-    <!-- Imagen -->
-    <div>
-        <img class="logoV" src="{% static 'JA/img/cielo2.jpg' %}"/>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div class="container mt-5">
+
+    <!-- CUADRO SEMITRANSPARENTE A LA IZQUIERDA -->
+    <div class="content-box">
+
+        <!-- BUSCADOR -->
+        <form action="buscar/" method="GET" class="search-row">
+            <input type="text" name="usern" class="form-control search-input">
+            <button class="btn btn-warning search-btn">
+                Buscar Usuario
+            </button>
+        </form>
+
+        <!-- BOTÓN INSCRIBIR -->
+        <div class="inscribir-row">
+            <a href="{% url 'Crear Socios' %}" class="btn btn-warning inscribir-btn">
+                Inscribir Usuario
+            </a>
+        </div>
+
     </div>
-    <!-- Texto RUTA y nombre -->
-    <div style="position: absolute; top: -100px; left: 600px; transform: translate(-50%, -50%); text-align: center; width: 100%;">
-        <div style="font-family: Sora-Regular, Helvetica; font-weight: 600; font-size: 39px; color: rgba(26, 53, 199, 1);">RUTA</div>
-        <div style="font-family: Sora-Regular, Helvetica; font-weight: 600; font-size: 39px; color: rgba(26, 53, 199, 1);">{{nombre}}</div>
+
+    <!-- IMAGEN FUERA DEL CUADRO (CONFIGURABLE) -->
+    <div class="imagen-ruta-container">
+        <img src="{% static 'JA/img/tablero.png' %}" class="imagen-ruta">
+        <div class="ruta-texto">
+            <img src="{{ imagen_url }}" class="ruta-title">
+        </div>
     </div>
+
 </div>
-  
-    </div>
-{% endblock %}  
+
+<style>
+/* Caja semitransparente */
+.content-box {
+    background: rgba(255,255,255,0.75);
+    padding: 20px;
+    border-radius: 20px;
+    border: 3px solid rgba(26,53,199,1);
+    width: 420px;         /* Ajusta el ancho */
+    height: 150px;        /* Ajusta la altura */
+    margin-left: -150px;       /* Pegada a la izquierda */
+    margin-top: -20px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    overflow: auto;
+}
+
+/* Fila del buscador */
+.search-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.search-input {
+    width: 300px;
+}
+
+.search-btn {
+    font-weight: bold;
+    color: rgba(26,53,199,1);
+}
+
+/* Botón inscribir */
+.inscribir-row {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.inscribir-btn {
+    font-weight: bold;
+    color: rgba(26,53,199,1);
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+/* Imagen externa — completamente configurable */
+.imagen-ruta-container {
+    position: relative;
+    margin-left: 670px;    /* Ajusta la posición horizontal */
+    margin-top: -200px;    /* Ajusta la posición vertical */
+    text-align: center;
+}
+
+.imagen-ruta {
+    width: 328px;           /* Ajusta tamaño de la imagen */
+    height: auto;
+    border-radius: 15px;
+    margin-top: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+
+/* Texto superpuesto sobre la imagen */
+.ruta-texto {
+    position: absolute;
+    top: 55%;             
+    left: 59%;            
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+/* Efecto de cartel pegado al tablón */
+.ruta-title {
+    width: 180px;
+    height: auto;
+    position: absolute;
+
+    /* Simulación de estar pegado al tablero */
+    transform: translate(-50%, -50%) rotate(-2deg);
+
+    /* Borde finito tipo papel */
+    border: 2px solid rgba(80, 50, 20, 0.6);
+    border-radius: 6px;
+
+    /* Sombras que simulan profundidad */
+    box-shadow:
+        0px 4px 8px rgba(0, 0, 0, 0.4),
+        0px 10px 20px rgba(0, 0, 0, 0.3);
+
+    /* Ligerísima deformación para dar realismo */
+    filter: drop-shadow(2px 3px 3px rgba(0,0,0,0.4));
+
+    /* Evita que se vea demasiado digital */
+    background: rgba(255,255,255,0.9);
+    padding: 3px;
+}
+
+.ruta-nombre {
+    font-size: 26px;
+    font-weight: bold;
+    color: rgba(26,53,199,1);
+    text-shadow: 2px 2px 6px white;
+}
+</style>
+
+{% endblock %}

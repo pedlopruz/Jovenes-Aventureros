@@ -1,67 +1,150 @@
 {% extends "jovenesAventureros/base.html" %}
 {% load crispy_forms_tags %}
-
 {% load static %}
 
 {% block content %}
-<div class="overlap-groupRegister">
-  <p class="gestiones" style="font-size: 25px; margin-left: -660px; margin-top: -345px;">Rutas Realizadas</p>
-  <div class="contenedorFormularioSocio">
-    <table class ="table" style="margin-left: -70px; margin-top: 0px;">
-      <thead>
-        <tr>
-          <th class="th">Nombre</th>
-          <th class="th">Destino</th>
-          <th class="th">Fecha</th>
-          <th class="th">Distancia</th>
-          <th class="th">Dificultad</th>
-          <th class="th">Precio Socio</th>
-          <th class="th">Precio No Socio</th>
-          <th class="th">Recaudación Metálico</th>
-          <th class="th">Recaudación Banco</th>
-          <th class="th">Nº/PS</th>
-          <th class="th">Nº/PNS</th>
-          <th class="th">Pago Metálico</th>
-          <th class="th">Pago Banco</th>
-          <th class="th">Inscritos</th>
-          <th class="th">Lista Bus</th>
-          <th class="th">Lista Seguro</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for ins in entity %}
-          <tr>
-            <td class="td">{{ ins.nombre }}</td>
-            <td class="td">{{ ins.destino }}</td>
-            <td class="td">{{ ins.fecha }}</td>
-            <td class="td">{{ ins.distancia }}Km</td>
-            <td class="td">{{ ins.dificultad }}</td>
-            <td class="td">{{ ins.precio_socio }}€</td>
-            <td class="td">{{ ins.precio_no_socio }}€</td>
-            <td class="td">{{ ins.recaudacion_metalico }}€</td>
-            <td class="td">{{ ins.recaudacion_banco }}€</td>
-            <td class="td">{{ ins.total_socios}}</td>
-            <td class="td">{{ ins.total_no_socios}}</td>
-            <td class="td">{{ ins.pago_metalico }}</td>
-            <td class="td">{{ ins.pago_banco }}</td>
-            <td class="td">
-              <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Usuarios Inscritos' ins.id %}" style="color: rgba(26, 53, 199, 1);">Inscritos</a></button>
-          </td>
-            <td class="td">
-              <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Exportar a PDF' ins.id%}" style="color: rgba(26, 53, 199, 1);">Exportar</a></button>
-            </td>
-            <td class="td">
-              <button type="submit" class="btn2 btn-success" style="margin-top: 2px; background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1);"><a href="{% url 'Exportar a PDF V2' ins.id%}" style="color: rgba(26, 53, 199, 1);">Exportar</a></button>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <button type="submit" class="btn2 btn-success" style="margin-top: 20px; margin-bottom: 20px;background-color: #FBF707; border-radius: 10px; color: rgba(26, 53, 199, 1); margin-left:1120px;padding: 10px 15px;"><a href="{% url 'Confirmacion' %}" style="color: rgba(26, 53, 199, 1);">Borrado Anual Socios</a></button>
-     
 
-  </div>
-  </div>
-  <div class="boIni">
+<style>
+    /* CAJA SEMITRANSPARENTE MÁS ANCHA */
+    .contenedorFormularioSocio {
+        background: rgba(255,255,255,0.78);
+        padding: 35px;
+        border-radius: 25px;
+        border: 4px solid rgba(26,53,199,1);
+        box-shadow: 0 0 25px rgba(0,0,0,0.35);
+
+        width: 135%;         /* 🔥 Más ancho */
+        max-width: 1850px;   /* 🔥 Caja más grande */
+        min-height: 540px;
+        margin: 0 auto;
+        margin-top: -20px;
+        margin-left: -195px;
+    }
+
+    /* ENVOLTORIO SIN SCROLL */
+    .tabla-wrapper {
+        width: 100%;
+        overflow-x: hidden !important; /* 🔥 Eliminamos scroll */
+    }
+
+    /* TABLA MÁS ANCHA Y REPARTIDA */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed; /* 🔥 Evita que la tabla rompa la caja */
+    }
+
+    .table th, 
+    .table td {
+        border: 1px solid rgba(26,53,199,0.35);
+        padding: 9px 10px;
+        font-size: 14px;               /* Más legible */
+        background: rgba(255,255,255,0.9);
+        word-break: break-word;
+        white-space: normal !important;
+        text-align: center;
+    }
+
+    .table th {
+        background: rgba(26,53,199,0.90);
+        color: #FBF707;
+        font-weight: bold;
+        font-size: 14px;
+        padding-top: 14px;
+        padding-bottom: 14px;
+    }
+
+    /* BOTONES */
+    .tabla-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+        font-weight: bold;
+        background: #FBF707;
+        color: rgba(26,53,199,1);
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-block;
+        transition: .25s;
+    }
+
+    .tabla-btn:hover {
+        transform: scale(1.07);
+        opacity: .9;
+    }
+</style>
+
+
+<div class="overlap-groupRegister">
+
+    <div class="contenedorFormularioSocio">
+
+        <p class="gestiones" 
+           style="font-size: 32px; text-align: center; margin-bottom: 25px; margin-top: -10px;">
+            Rutas Realizadas
+        </p>
+
+        <div class="tabla-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Destino</th>
+                        <th>Fecha</th>
+                        <th>Distancia</th>
+                        <th>Dificultad</th>
+                        <th>Precio Socio</th>
+                        <th>Precio No Socio</th>
+                        <th>Recaudación<br>Metálico</th>
+                        <th>Recaudación<br>Banco</th>
+                        <th>Nº/PS</th>
+                        <th>Nº/PNS</th>
+                        <th>Pago<br>Metálico</th>
+                        <th>Pago Banco</th>
+                        <th>Inscritos</th>
+                        <th>Lista Bus</th>
+                        <th>Lista Seguro</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for ins in entity %}
+                    <tr>
+                        <td>{{ ins.nombre }}</td>
+                        <td>{{ ins.destino }}</td>
+                        <td>{{ ins.fecha }}</td>
+                        <td>{{ ins.distancia }} Km</td>
+                        <td>{{ ins.dificultad }}</td>
+                        <td>{{ ins.precio_socio }} €</td>
+                        <td>{{ ins.precio_no_socio }} €</td>
+                        <td>{{ ins.recaudacion_metalico }} €</td>
+                        <td>{{ ins.recaudacion_banco }} €</td>
+                        <td>{{ ins.total_socios }}</td>
+                        <td>{{ ins.total_no_socios }}</td>
+                        <td>{{ ins.pago_metalico }}</td>
+                        <td>{{ ins.pago_banco }}</td>
+
+                        <td><a href="{% url 'Usuarios Inscritos' ins.id %}" class="tabla-btn">Inscritos</a></td>
+                        <td><a href="{% url 'Exportar a PDF' ins.id %}" class="tabla-btn">Exportar</a></td>
+                        <td><a href="{% url 'Exportar a PDF V2' ins.id %}" class="tabla-btn">Exportar</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="text-align: right; margin-top: 30px; margin-right: 20px;">
+            <a href="{% url 'Confirmacion' %}" 
+                style="background: #FBF707; color: rgba(26,53,199,1);
+                    padding: 12px 22px; font-size: 16px; 
+                    border-radius: 12px; font-weight: bold; text-decoration: none;">
+                Borrado Anual Socios
+            </a>
+        </div>
+
+    </div>
+
 </div>
-{% endblock %}  
+
+<div class="boIni"></div>
+
+{% endblock %}

@@ -20,12 +20,14 @@ TALLA = [
 ]
 BAJA = "BAJA"
 MEDIA_BAJA = "MEDIA-BAJA"
+MEDIA = "MEDIA"
 MEDIA_ALTA = "MEDIA-ALTA"
 ALTA = "ALTA"
 
 DIFICULTAD = [
     (BAJA, "BAJA"),
     (MEDIA_BAJA, "MEDIA-BAJA"),
+    (MEDIA, "MEDIA"),
     (MEDIA_ALTA, "MEDIA-ALTA"),
     (ALTA, "ALTA"),
 ]
@@ -60,7 +62,7 @@ class Inscripciones(models.Model):
     precio_socio = models.PositiveIntegerField()
     precio_no_socio = models.PositiveIntegerField()
     finalizada = models.BooleanField(default=False)
-    recaudacion_metálico = models.IntegerField(default=0)
+    recaudacion_metalico = models.IntegerField(default=0)
     recaudacion_banco = models.IntegerField(default=0)
     pago_metalico = models.IntegerField(default=0)
     pago_banco = models.IntegerField(default=0)

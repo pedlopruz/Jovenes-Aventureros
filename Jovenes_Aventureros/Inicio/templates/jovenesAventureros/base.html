@@ -1,38 +1,132 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-{% load static %}
-<meta charset="utf-8" />
-<!-- Bootstrap -->
-<link href="{% static 'JA/vendor/bootstrap/css/bootstrapp.min.css'%}" rel="stylesheet">
+    {% load static %}
+    <meta charset="utf-8" />
 
-<!-- Fonts -->
-    
-<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet"> 
-<link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="{% static 'JA/vendor/bootstrap/css/bootstrapp.min.css' %}" rel="stylesheet">
 
-<link href="{% static 'JA/css/gestion.css'%}" rel="stylesheet">
-<link href="{% static 'JA/css/styleguide.css'%}" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
+
+    <style>
+
+        /* Fondo sin filtro */
+        body {
+            background-image: url("{% static 'JA/img/fondo_bosque.jpg' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+        }
+
+        .site-overlay {
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* CABECERA AMARILLA */
+        .header-box {
+            background-color: #FBF707;
+            padding: 1px 10px 15px 10px;
+            border-bottom: 5px solid rgba(26, 53, 199, 1);
+            position: relative;
+            text-align: center;
+        }
+
+        /* Posicionamiento de las imágenes laterales */
+        
+        .header-logo-right {
+            position: absolute;
+            top: 10px;
+            width: 300px; 
+            margin-top: 50px;  /* Más grandes */
+        }
+        .header-logo-left{
+          position: absolute;
+            top: 10px;
+            width: 140px;
+
+        }
+
+        .header-logo-left {
+            left: 20px;
+        }
+
+        .header-logo-right {
+            right: 20px;
+        }
+
+        /* Imagen central */
+        .header-logo-center {
+            width: 600px;  /* La más grande */
+            display: block;
+            margin: 0 auto;
+            margin-top: 10px;
+        }
+
+        /* Botones debajo del logo central */
+        .menu-buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .menu-buttons a {
+            background-color: rgba(26,53,199,1);
+            border-radius: 12px;
+            color: #FBF707;
+            width: 160px;
+            padding: 10px 0;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .menu-buttons a:hover {
+            background-color: rgba(20, 40, 150, 1);
+            transform: scale(1.05);
+            transition: 0.2s;
+        }
+
+    </style>
 </head>
-<body>
-  <div class="pgina-de-inicio">
-  <div class="div">
-  <div class="pruebaf">
-    
-    
-    
 
-  </div>
-  {% block content %}
-  {% endblock%}
-  <div class="frame-3">
-  <img class="logo" src="{% static 'JA/img/cabecera1.jpg' %}"/>
-  <img class="logoc" src="{% static 'JA/img/cabeceraCentral.jpg' %}"/>
-  <img class="logof" src="{% static 'JA/img/cabeceraFinal.jpg' %}"/>
-  <div class="text-wrapper-3" style="margin-left: 200px; margin-top: 20px;"><button type="submit" class="btn btn-success" style="margin-top: -5px; margin-bottom: 15px;background-color:rgba(26, 53, 199, 1); border-radius: 10px; color: #FBF707; width: 90%;font-size: 20px;"><a href="{% url 'Listar Socios' %}" style="color: #FBF707;">Usuarios</a></button></div>
-  <div class="text-wrapper-4" style="margin-left: 125px;margin-top: 20px"><button type="submit" class="btn btn-success" style="margin-top: -5px; margin-bottom: 15px;background-color:rgba(26, 53, 199, 1); border-radius: 10px; color: #FBF707; width: 90%;font-size: 20px;"><a href="{% url 'Mostrar Usuarios Socios' %}" style="color: #FBF707">Socios</a></button></div>
-  <div class="text-wrapper-5" style="margin-top: 20px;"><button type="submit" class="btn btn-success" style="margin-top: -5px; margin-bottom: 15px;background-color:rgba(26, 53, 199, 1); border-radius: 10px; color: #FBF707; width: 90%;font-size: 20px;"><a href="{% url 'Incripciones Abiertas' %}" style="color: #FBF707">Ruta</a></button></div>
-  </div>
-  </div>
-  </div>
-  </body>
+<body>
+
+<div class="site-overlay">
+
+    <!-- CABECERA COMPLETA -->
+    <div class="header-box">
+
+        <!-- LOGOS LATERALES -->
+        <img src="{% static 'JA/img/cabecera1.jpg' %}" class="header-logo-left">
+        <img src="{% static 'JA/img/cabeceraFinal.jpg' %}" class="header-logo-right">
+
+        <!-- LOGO CENTRAL MUY GRANDE -->
+        <img src="{% static 'JA/img/cabeceraCentral.jpg' %}" class="header-logo-center">
+
+        <!-- BOTONES DE MENÚ CENTRADOS -->
+        <div class="menu-buttons">
+            <a href="{% url 'Listar Socios' %}">Usuarios</a>
+            <a href="{% url 'Mostrar Usuarios Socios' %}">Socios</a>
+            <a href="{% url 'Incripciones Abiertas' %}">Ruta</a>
+        </div>
+
+    </div>
+
+    <!-- AQUÍ SIGUE TU CONTENIDO NORMAL -->
+    <div class="container mt-5">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -43,9 +43,10 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'Inicio',
     'Socios',
+    'tailwind',
 
 ]
-
+TAILWIND_APP_NAME = 'theme'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -82,8 +83,12 @@ WSGI_APPLICATION = 'Jovenes_Aventureros.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'jovenes_aventureros',   # nombre de tu DB
+        'USER': 'postgres',              # usuario postgres o el que crees
+        'PASSWORD': 'password123',       # tu contraseña
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 
