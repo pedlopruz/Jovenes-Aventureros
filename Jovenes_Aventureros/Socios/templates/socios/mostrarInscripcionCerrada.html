@@ -103,6 +103,7 @@
                         <th>Inscritos</th>
                         <th>Lista Bus</th>
                         <th>Lista Seguro</th>
+                        <th>Reabrir</th>
                     </tr>
                 </thead>
 
@@ -126,6 +127,8 @@
                         <td><a href="{% url 'Usuarios Inscritos' ins.id %}" class="tabla-btn">Inscritos</a></td>
                         <td><a href="{% url 'Exportar a PDF' ins.id %}" class="tabla-btn">Exportar</a></td>
                         <td><a href="{% url 'Exportar a PDF V2' ins.id %}" class="tabla-btn">Exportar</a></td>
+                        <td><a href="{% url 'Reabrir Inscripcion' ins.id %}" class="tabla-btn">Reabrir</a></td>
+
                     </tr>
                 {% endfor %}
                 </tbody>

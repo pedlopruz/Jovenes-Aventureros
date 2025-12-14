@@ -29,6 +29,7 @@ urlpatterns = [
     path('confirmacion/', confirmacion, name = "Confirmacion"),
     path('eliminarUsuario/<int:socioid>', eliminar_usuario, name = "Eliminar Usuario"),
     path('generarCsvSocios/', generar_csv_socios, name="Generar CSV Socios"),
+    path('reabrirInscripcion/<int:insid>/', reabrir_inscripcion, name="Reabrir Inscripcion"),
 
     
 

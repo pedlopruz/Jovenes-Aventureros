@@ -979,3 +979,15 @@ def generar_csv_socios(request):
 
     return response
 
+def reabrir_inscripcion(request, insid):
+    inscripciones_abiertas = Inscripciones.objects.filter(finalizada=False)
+    if inscripciones_abiertas.exists():
+        return redirect('Incripciones Abiertas')
+
+    inscripcion = Inscripciones.objects.filter(id=insid).first()
+    if inscripcion:
+        inscripcion.finalizada = False
+        inscripcion.save()
+
+    return redirect('Incripciones Abiertas')
+
