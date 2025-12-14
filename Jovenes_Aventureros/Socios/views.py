@@ -39,6 +39,7 @@ def cargarSocios(request):
 
         for numero_fila, fila in enumerate(lector_csv, start=1):
             try:
+                numero_socio = int(fila['Número de Socio'])
                 nombre = fila['Nombre'].strip()
                 apellidos = fila['Apellidos'].strip()
                 dni = fila['DNI'].strip()
@@ -46,6 +47,11 @@ def cargarSocios(request):
                 codigo_postal = fila['Código Postal'].strip()
                 ciudad = fila['Ciudad'].strip()
                 provincia = fila['Provincia'].strip()
+                talla_camiseta = fila['Talla Camiseta'].strip()
+
+                # Booleanos
+                socio = fila['Socio'].strip().lower() == "true"
+                regalo = fila['Regalo'].strip().lower() == "true"
 
                 # Fecha de nacimiento
                 fecha_raw = fila['Fecha de Nacimiento'].strip()
@@ -57,6 +63,7 @@ def cargarSocios(request):
                     ).date()
 
                 Socios.objects.create(
+                    numero_socio=numero_socio,
                     nombre=nombre,
                     apellidos=apellidos,
                     dni=dni,
@@ -64,14 +71,17 @@ def cargarSocios(request):
                     telefono=telefono,
                     codigo_postal=codigo_postal,
                     ciudad=ciudad,
-                    provincia=provincia
+                    provincia=provincia,
+                    socio=socio,
+                    regalo=regalo,
+                    talla_camiseta=talla_camiseta
                 )
 
             except Exception as e:
-                print(f"Error en la fila {numero_fila}: {e}")
-                print(f"Contenido de la fila {numero_fila}: {fila}")
+                print(f"❌ Error en la fila {numero_fila}: {e}")
+                print(f"📄 Contenido: {fila}")
 
-    return HttpResponse("Todo Ok")
+    return HttpResponse("Carga de socios completada correctamente")
 
 
 def obtener_imagen_web_BeautifulSoup():
