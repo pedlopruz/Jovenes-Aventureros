@@ -23,6 +23,7 @@
                 <div class="form-column">
                     {{ formulario.nombre|as_crispy_field }}
                     {{ formulario.distancia|as_crispy_field }}
+                    {{ formulario.precio_socio|as_crispy_field }}
                 </div>
                 <div class="form-column">
                     {{ formulario.destino|as_crispy_field }}
@@ -31,7 +32,8 @@
                 <div class="form-column">
                     {{ formulario.fecha|as_crispy_field }}
                     {{ formulario.dificultad|as_crispy_field }}
-                </div>
+                    {{ formulario.precio_no_socio|as_crispy_field }}
+        
             </div>
 
             <button type="submit" class="btn-form-submit">Actualizar</button>

@@ -327,15 +327,27 @@ def actualizar_inscripcion(request, inscripcionid):
     inscripcion = Inscripciones.objects.filter(id = inscripcionid).first()
 
     if request.method == 'POST':
-        inscripcion_form = InscripcionFormA(request.POST, instance=inscripcion)
+        inscripcion_form = InscripcionForm(request.POST, instance=inscripcion)
 
         if inscripcion_form.is_valid():
+
             inscripcion_form.save()
+        
+        inscripciones_socios = Inscripcion_Socio.objects.filter(inscripcion = inscripcion)
+        for inscripcion_socio in inscripciones_socios:
+            if inscripcion_socio.socios.socio is True:
+                inscripcion_socio.precio = inscripcion.precio_socio
+                inscripcion_socio.save()
+            else:
+                inscripcion_socio.precio = inscripcion.precio_no_socio
+                inscripcion_socio.save()
+        
+
 
         return redirect('Incripciones Abiertas')
 
     else:
-        inscripcion_form = InscripcionFormA(instance=inscripcion)
+        inscripcion_form = InscripcionForm(instance=inscripcion)
 
         return render(request, 'socios/actualizarInscripcion.html', {'formulario': inscripcion_form})
     
