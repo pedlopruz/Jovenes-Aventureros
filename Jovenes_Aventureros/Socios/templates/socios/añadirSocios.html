@@ -23,21 +23,21 @@
 
             <div class="form-col">
                 {{ formulario.nombre|as_crispy_field }}
+                {{ formulario.apellidos|as_crispy_field }}
                 {{ formulario.dni|as_crispy_field }}
-                {{ formulario.ciudad|as_crispy_field }}
-                {{ formulario.talla_camiseta|as_crispy_field }}
+                {{ formulario.fecha_nacimiento|as_crispy_field }}
             </div>
 
             <div class="form-col">
                 <br><br>
-                {{ formulario.fecha_nacimiento|as_crispy_field }}
-                {{ formulario.provincia|as_crispy_field }}
+                {{ formulario.telefono|as_crispy_field }}
+                {{ formulario.codigo_postal|as_crispy_field }}
             </div>
 
             <div class="form-col">
-                {{ formulario.apellidos|as_crispy_field }}
-                {{ formulario.telefono|as_crispy_field }}
-                {{ formulario.codigo_postal|as_crispy_field }}
+                {{ formulario.ciudad|as_crispy_field }}
+                {{ formulario.provincia|as_crispy_field }}
+                {{ formulario.talla_camiseta|as_crispy_field }}
 
                 <div class="socio-row">
                     Socio &nbsp; {{ formulario.socio|add_class:"bigger-input" }}

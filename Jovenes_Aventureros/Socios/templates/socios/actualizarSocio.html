@@ -15,36 +15,29 @@
         <div class="mensaje-error">{{ mensaje }}</div>
         {% endif %}
 
-        <!-- GRID DEL FORMULARIO -->
+        <!-- Grid de formulario -->
         <div class="form-grid">
 
             <div class="form-col">
-                {{ formulario.numero_socio|as_crispy_field }}
-                {{ formulario.dni|as_crispy_field }}
-                {{ formulario.ciudad|as_crispy_field }}
-                {{ formulario.talla_camiseta|as_crispy_field }}
-            </div>
-
-            <div class="form-col">
                 {{ formulario.nombre|as_crispy_field }}
-
-                <div style="margin-top: 17px;">
-                    {{ formulario.fecha_nacimiento|as_crispy_field }}
-                    {{ formulario.provincia|as_crispy_field }}
-                </div>
-
-                <div class="checkbox-row">
-                    Socio &nbsp; {{ formulario.socio|add_class:"bigger-input" }}
-                </div>
+                {{ formulario.apellidos|as_crispy_field }}
+                {{ formulario.dni|as_crispy_field }}
+                {{ formulario.fecha_nacimiento|as_crispy_field }}
             </div>
 
             <div class="form-col">
-                {{ formulario.apellidos|as_crispy_field }}
+                <br><br>
                 {{ formulario.telefono|as_crispy_field }}
                 {{ formulario.codigo_postal|as_crispy_field }}
+            </div>
 
-                <div class="checkbox-row">
-                    Regalo &nbsp; {{ formulario.regalo|add_class:"bigger-input" }}
+            <div class="form-col">
+                {{ formulario.ciudad|as_crispy_field }}
+                {{ formulario.provincia|as_crispy_field }}
+                {{ formulario.talla_camiseta|as_crispy_field }}
+
+                <div class="socio-row">
+                    Socio &nbsp; {{ formulario.socio|add_class:"bigger-input" }}
                 </div>
             </div>
 
