@@ -120,24 +120,27 @@ def actualizar_Socio(request, socioid):
             socio_form = SocioForm(request.POST, instance=socio)
 
             if socio_form.is_valid():
-                socio_form.save()
+                socio_form.save(commit=False)
                 socio.nombre = socio.nombre.upper()
                 socio.apellidos = socio.apellidos.upper()
                 socio.save()
-                if socio.socio is False:
+                if not socio.socio:
                     socio.regalo = False
                     socio.numero_socio = 0
-                    socio.save()
+                socio.save()
 
                 if socio.socio is True:
                     return redirect('Mostrar Usuarios Socios')
                 else:
                     return redirect('Listar Socios')
+            else:
+                print(socio_form.errors)  # Para ver en la consola qué está fallando
 
         else:
+            
             socio_form = SocioForm(instance=socio)
 
-        return render(request, 'socios/actualizarSocio.html', {'formulario': socio_form})
+        return render(request, 'socios/actualizarSocio.html', {'formulario': socio_form, 'errores': socio_form.errors})
     else:
         if request.method == 'POST':
             socio_form = NoSocioForm(request.POST, instance=socio)
