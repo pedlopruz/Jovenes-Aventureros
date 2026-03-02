@@ -34,33 +34,63 @@ def cargarSocios(request):
     Socios.objects.all().delete()
 
     path = "data/socios.csv"
+
+    TALLAS_VALIDAS = ["S", "M", "L", "XL", "XXL"]
+
     with open(path, newline='', encoding='utf-8-sig') as csvfile:
         lector_csv = csv.DictReader(csvfile, delimiter=',')
 
         for numero_fila, fila in enumerate(lector_csv, start=1):
             try:
-                numero_socio = int(fila['Número de Socio'])
-                nombre = fila['Nombre'].strip()
-                apellidos = fila['Apellidos'].strip()
-                dni = fila['DNI'].strip()
-                telefono = fila['Teléfono'].strip()
-                codigo_postal = fila['Código Postal'].strip()
-                ciudad = fila['Ciudad'].strip()
-                provincia = fila['Provincia'].strip()
-                talla_camiseta = fila['Talla Camiseta'].strip()
+                numero_socio = int(fila.get('Número de Socio') or 0)
+
+                nombre = fila.get('Nombre', '').strip()
+                apellidos = fila.get('Apellidos', '').strip()
+                dni = fila.get('DNI', '').strip()
+
+                telefono = fila.get('Teléfono', '').strip()
+                if telefono.lower() == "sin especificar":
+                    telefono = ""
+
+                codigo_postal = fila.get('Código Postal', '').strip()
+                if codigo_postal.lower() == "sin especificar":
+                    codigo_postal = ""
+
+                ciudad = fila.get('Ciudad', '').strip()
+                if ciudad.lower() == "sin especificar":
+                    ciudad = ""
+
+                provincia = fila.get('Provincia', '').strip()
+                if provincia.lower() == "sin especificar":
+                    provincia = ""
 
                 # Booleanos
-                socio = fila['Socio'].strip().lower() == "true"
-                regalo = fila['Regalo'].strip().lower() == "true"
+                socio = fila.get('Socio', '').strip().lower() == "true"
+                regalo = fila.get('Regalo', '').strip().lower() == "true"
 
-                # Fecha de nacimiento
-                fecha_raw = fila['Fecha de Nacimiento'].strip()
-                if fecha_raw.lower() == "sin especificar" or fecha_raw == "":
-                    fecha_nacimiento = None
+                # Fecha como texto
+                fecha_raw = fila.get('Fecha de Nacimiento', '').strip()
+
+                if not fecha_raw or fecha_raw.lower() == "sin especificar":
+                    fecha_nacimiento = ""
                 else:
-                    fecha_nacimiento = datetime.strptime(
-                        fecha_raw, "%d/%m/%Y"
-                    ).date()
+                    try:
+                        fecha_convertida = datetime.strptime(fecha_raw, "%Y-%m-%d")
+                    except ValueError:
+                        try:
+                            fecha_convertida = datetime.strptime(fecha_raw, "%d/%m/%Y")
+                        except ValueError:
+                            fecha_convertida = None
+
+                    if fecha_convertida:
+                        fecha_nacimiento = fecha_convertida.strftime("%Y-%m-%d")
+                    else:
+                        fecha_nacimiento = fecha_raw
+
+                # Talla segura
+                talla_camiseta = fila.get('Talla Camiseta', 'S').strip().upper()
+                if talla_camiseta not in TALLAS_VALIDAS:
+                    talla_camiseta = "S"
 
                 Socios.objects.create(
                     numero_socio=numero_socio,
