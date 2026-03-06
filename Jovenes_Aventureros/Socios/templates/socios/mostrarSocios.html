@@ -10,7 +10,7 @@
     <div class="content-box">
 
         <!-- BUSCADOR -->
-        <form action="buscar/" method="GET" class="search-row">
+        <form action="{% url 'buscar' %}" method="GET" class="search-row">
             <input type="text" name="usern" class="form-control search-input">
             <button class="btn btn-warning search-btn">
                 Buscar Usuario
