@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path("", home, name="Home"),
+    path("socios/mostrarSocios/", home, name="Home"),
 ]
 
 if settings.DEBUG:
