@@ -1,7 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
 import csv
-
-from Jovenes_Aventureros.Jovenes_Aventureros import settings
 from .models import *
 from django.http import Http404
 from .forms import *
