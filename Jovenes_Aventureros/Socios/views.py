@@ -880,7 +880,7 @@ def exportar_tiket_socios_html(request, insid, socioid):
             "dni": socio.socios.dni,
         })
 
-    return render(request, "socios/ticket_termico.html", {"tickets": tickets, "MEDIA_URL": settings.MEDIA_URL})
+    return render(request, "socios/ticket_termico.html", {"tickets": tickets})
 
 def eliminar_de_inscripcion(request, insid, socioid):
     entity = Inscripcion_Socio.objects.filter(inscripcion__id = insid, socios__id= socioid).first()
