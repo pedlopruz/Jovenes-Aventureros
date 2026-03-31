@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ticket</title>
+  <style>
+    /* ── Reset ── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ── Pantalla: preview centrado ── */
+    body {
+      background: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      padding: 24px;
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* ── Cada ticket ── */
+    .ticket {
+      width: 72mm;          /* área imprimible real en 80mm */
+      background: white;
+      padding: 4mm 3mm;
+      font-size: 9pt;
+      line-height: 1.45;
+      page-break-after: always;  /* corte entre tickets */
+    }
+    .ticket:last-child {
+      page-break-after: avoid;
+    }
+
+    /* ── Logo ── */
+    .ticket img {
+      width: 40mm;
+      display: block;
+      margin-bottom: 3mm;
+    }
+
+    /* ── Cabecera organización ── */
+    .org {
+      text-align: center;
+      font-size: 8pt;
+      margin-bottom: 3mm;
+      line-height: 1.5;
+    }
+
+    /* ── Separador ── */
+    .sep {
+      border-top: 1px dashed #000;
+      margin: 2mm 0;
+    }
+
+    /* ── Fila de datos ── */
+    .row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1.5mm;
+    }
+    .row .label { font-weight: bold; }
+
+    /* ── Advertencia ── */
+    .advertencia-titulo {
+      font-weight: bold;
+      font-size: 8.5pt;
+      margin: 2mm 0 1mm;
+    }
+    .advertencia {
+      font-size: 7.5pt;
+      line-height: 1.4;
+      text-align: justify;
+    }
+
+    /* ── Firma ── */
+    .firma {
+      margin-top: 4mm;
+      font-size: 9pt;
+    }
+    .firma-linea {
+      border-top: 1px solid #000;
+      margin-top: 8mm;
+      width: 60mm;
+    }
+
+    /* ── Botón imprimir (solo pantalla) ── */
+    .btn-print {
+      display: block;
+      margin: 0 auto 16px;
+      padding: 10px 28px;
+      font-size: 15px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* ── IMPRESIÓN ── */
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+        gap: 0;
+      }
+      .btn-print { display: none; }
+
+      .ticket {
+        width: 72mm;
+        padding: 3mm 2mm;
+        /* Sin sombra, sin fondo gris */
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="btn-print" onclick="window.print()">🖨️ Imprimir tickets</button>
+
+  {% for t in tickets %}
+
+  {# ── TICKET 1: sin advertencia legal, con firma ── #}
+  <div class="ticket">
+    <img src="/media/img/logo_t.png" alt="Logo">
+    <div class="org">
+      Jóvenes Aventureros del Sur<br>
+      Apartados de correos 29<br>
+      G14399216<br>
+      14550-Montilla-Córdoba
+    </div>
+    <div class="sep"></div>
+
+    <div class="row"><span class="label">Ruta:</span><span>{{ t.ruta }}</span></div>
+    <div class="row"><span class="label">Fecha:</span><span>{{ t.fecha }}</span></div>
+    <div class="sep"></div>
+    <div class="row">
+      <span><b>Bus:</b> {{ t.bus }}</span>
+      <span><b>Asiento:</b> {{ t.asiento }}</span>
+    </div>
+    <div class="row"><span class="label">Cuota:</span><span>{{ t.precio }}€</span></div>
+    <div class="sep"></div>
+    <div class="row"><span class="label">Nº Socio:</span><span>{{ t.num_socio }}</span></div>
+    <div class="row"><span class="label">Nombre:</span><span>{{ t.nombre }}</span></div>
+    <div class="row"><span class="label">Apellidos:</span><span>{{ t.apellidos }}</span></div>
+    <div class="row"><span class="label">Tfn:</span><span>{{ t.telefono }}</span></div>
+    <div class="row"><span class="label">DNI:</span><span>{{ t.dni }}</span></div>
+
+    <div class="firma">
+      Firma:
+      <div class="firma-linea"></div>
+    </div>
+  </div>
+
+  {# ── TICKET 2: con advertencia legal, sin firma ── #}
+  <div class="ticket">
+    <img src="/media/img/logo_t.png" alt="Logo">
+    <div class="org">
+      Jóvenes Aventureros del Sur<br>
+      Apartados de correos 29<br>
+      G14399216<br>
+      14550-Montilla-Córdoba
+    </div>
+    <div class="sep"></div>
+
+    <div class="row"><span class="label">Ruta:</span><span>{{ t.ruta }}</span></div>
+    <div class="row"><span class="label">Fecha:</span><span>{{ t.fecha }}</span></div>
+    <div class="sep"></div>
+    <div class="row">
+      <span><b>Bus:</b> {{ t.bus }}</span>
+      <span><b>Asiento:</b> {{ t.asiento }}</span>
+    </div>
+    <div class="row"><span class="label">Cuota:</span><span>{{ t.precio }}€</span></div>
+    <div class="sep"></div>
+    <div class="row"><span class="label">Nº Socio:</span><span>{{ t.num_socio }}</span></div>
+    <div class="row"><span class="label">Nombre:</span><span>{{ t.nombre }}</span></div>
+    <div class="row"><span class="label">Apellidos:</span><span>{{ t.apellidos }}</span></div>
+    <div class="row"><span class="label">Tfn:</span><span>{{ t.telefono }}</span></div>
+    <div class="row"><span class="label">DNI:</span><span>{{ t.dni }}</span></div>
+
+    <div class="sep"></div>
+    <div class="advertencia-titulo">Advertencia Legal</div>
+    <div class="advertencia">
+      El senderismo y/o montañismo son deportes inherentemente con riesgos en mayor o
+      menor medida, al desarrollarse en un entorno como es el medio natural, y dependientes
+      del estado físico de cada participante, además de su equipación, técnicas e
+      inclemencia del tiempo. Su práctica conlleva la aceptación de este hecho,
+      recomendando encarecidamente estar preparados para la actividad.<br><br>
+      La presente ruta es una actividad organizada, por lo tanto el participante se somete
+      a la reglamentación existente e indicaciones de la organización.<br><br>
+      Acepto que mi imagen pueda aparecer en las fotos que se puedan compartir en los
+      espacios virtuales, cuyo propósito es la difusión de las actividades que la
+      asociación realice.
+    </div>
+  </div>
+
+  {% endfor %}
+
+  <script>
+    // Abre el diálogo de impresión automáticamente al cargar la página
+    window.addEventListener('load', () => window.print());
+  </script>
+
+</body>
+</html>

@@ -856,113 +856,29 @@ class AlignedImage(Flowable):
         img = Image(self.img_path, width=self.width, height=self.height)
         img.drawOn(self.canv, 0, 0)
 
-def exportar_tiket_socios_a_Pdf_v2(request, insid, socioid):
+def exportar_tiket_socios_html(request, insid, socioid):
     actualDate = datetime.now().date()
     inscripcion = Inscripciones.objects.filter(id=insid).first()
-    nombre = inscripcion.nombre
     socios = Inscripcion_Socio.objects.filter(inscripcion=inscripcion, socios__id=socioid)
-    filename = f"tique {nombre}"
 
-    # Response Object
-    response_pdf = HttpResponse(content_type="application/pdf")
-    response_pdf["Content-Disposition"] = f"attachment; filename={filename}.pdf"
-    styles = getSampleStyleSheet()
-
-    # Custom style for subtitles
-    subtitle_style = ParagraphStyle(name="Subtitle", parent=styles["Heading2"], fontSize=12, spaceAfter=-10)
-    ubtitle_style = ParagraphStyle(name="Subtitle", fontSize=9)
-    
-
-    # This is the PDF document
-    doc = SimpleDocTemplate(response_pdf, pagesize=A4, rightMargin=inch/500, leftMargin=inch/500, topMargin=inch/4, bottomMargin=inch/4)
-
-    # Create a Story list to hold elements
-    Story = []
-
-    # Add tique elements with subtitles
-    logoPath_pdf = "media/img/logo_t.png"
-    logo_pdf = AlignedImage(logoPath_pdf, width=190, height=70, hAlign='LEFT')
-    actualDateText = f"Fecha: {actualDate}"
+    tickets = []
     for socio in socios:
-        if socio.socios.socio is True:
-            num = socio.socios.numero_socio
-        else:
-            num = ""
-        asiento = 0
-        if socio.numero_bus == 1:
-            asiento = socio.asiento_bus
-        else:
-            asiento = socio.asiento_bus - 55
+        num = socio.socios.numero_socio if socio.socios.socio else ""
+        asiento = socio.asiento_bus if socio.numero_bus == 1 else socio.asiento_bus - 55
+        tickets.append({
+            "ruta": inscripcion.nombre,
+            "fecha": inscripcion.fecha,
+            "bus": socio.numero_bus,
+            "asiento": asiento,
+            "precio": socio.precio,
+            "num_socio": num,
+            "nombre": socio.socios.nombre,
+            "apellidos": socio.socios.apellidos,
+            "telefono": socio.socios.telefono,
+            "dni": socio.socios.dni,
+        })
 
-        tique_elements = [
-            logo_pdf,
-            Paragraph(f"Ruta: {inscripcion.nombre}", styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"Fecha: {inscripcion.fecha}", styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"Bus: {socio.numero_bus} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asiento: {asiento}", styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"Cuota:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{socio.precio}€", styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"Nº Socio: {num}", styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"Nombre: {socio.socios.nombre}",styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"apellidos: {socio.socios.apellidos}", styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"Tfn: {socio.socios.telefono} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DNI: {socio.socios.dni}", styles["Normal"]),
-            Spacer(1, 12),
-            Paragraph(f"Firma: ", styles["Normal"]),
-            Spacer(1, 60),
-            Paragraph(f"__________________________________________", styles["Normal"]),
-            Spacer(1, 20),
-            PageBreak(),
-            logo_pdf,
-            Paragraph(f"Ruta: {inscripcion.nombre}", styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"Fecha: {inscripcion.fecha}", styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"Bus: {socio.numero_bus} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asiento: {asiento}", styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"Cuota:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{socio.precio}€", styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"Nº Socio: {num}", styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"Nombre: {socio.socios.nombre}",styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"apellidos: {socio.socios.apellidos}", styles["Normal"]),
-            Spacer(1, 6),
-            Paragraph(f"Tfn: {socio.socios.telefono} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DNI: {socio.socios.dni}", styles["Normal"]),
-            Paragraph(f"Advertencia Legal", subtitle_style),
-            Paragraph(
-                """El senderismo y/o montañismo son deportes<br/>
-                   inherentemente con riesgos en mayor o menor<br/> 
-                   medida,al desarrollarse en un entorno como<br/>
-                   es el medio natural, y dependientes del estado<br/> 
-                   físico de cada participante, además de su<br/>
-                   equipación, técnicas e inclemencia del tiempo.<br/>
-                   Su práctica conlleva la aceptación de este hecho,<br/>
-                   recomendando encarecidamente estar<br/>
-                   preparados para la actividad.<br/>
-                   La presente ruta es una actividad<br/>
-                   organizada por lo tanto el participante se<br/> 
-                   somete a la reglamentación existente e<br/>
-                   indicaciones de la organización.<br/> 
-                   Acepto que mi imagen pueda<br/>
-                   aparecer en las fotos que se puedan compartir<br/>
-                   en los espacios virtuales, cuyo propósito es la<br/> 
-                   difusión de las actividades que<br/> 
-                   la asociación realice.""",
-                ubtitle_style
-            ),
-        ]
-
-    # Add tique elements to the Story
-    Story.extend(tique_elements)
-
-    doc.build(Story)
-
-    return response_pdf
+    return render(request, "socios/ticket_termico.html", {"tickets": tickets})
 
 def eliminar_de_inscripcion(request, insid, socioid):
     entity = Inscripcion_Socio.objects.filter(inscripcion__id = insid, socios__id= socioid).first()
