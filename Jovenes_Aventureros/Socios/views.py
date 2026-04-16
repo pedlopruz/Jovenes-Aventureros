@@ -24,6 +24,8 @@ from datetime import datetime
 from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame, NextPageTemplate, PageBreak, Flowable
 import requests
 from bs4 import BeautifulSoup
+import os
+import sys
 # Create your views here.
 
 import csv
@@ -33,85 +35,102 @@ from django.http import HttpResponse
 def cargarSocios(request):
     Socios.objects.all().delete()
 
-    path = "data/socios.csv"
+    # Determinar la ruta base correcta
+    if getattr(sys, 'frozen', False):
+        # Ejecutando como .exe
+        base_path = sys._MEIPASS
+    else:
+        # Ejecutando en desarrollo con manage.py
+        base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    # Construir la ruta completa al archivo CSV
+    path = os.path.join(base_path, 'data', 'socios.csv')
+    
+    # Verificar si el archivo existe
+    if not os.path.exists(path):
+        return HttpResponse(f"Error: No se encontró el archivo en {path}")
 
     TALLAS_VALIDAS = ["S", "M", "L", "XL", "XXL"]
 
-    with open(path, newline='', encoding='utf-8-sig') as csvfile:
-        lector_csv = csv.DictReader(csvfile, delimiter=',')
+    try:
+        with open(path, newline='', encoding='utf-8-sig') as csvfile:
+            lector_csv = csv.DictReader(csvfile, delimiter=',')
 
-        for numero_fila, fila in enumerate(lector_csv, start=1):
-            try:
-                numero_socio = int(fila.get('Número de Socio') or 0)
+            for numero_fila, fila in enumerate(lector_csv, start=1):
+                try:
+                    numero_socio = int(fila.get('Número de Socio') or 0)
 
-                nombre = fila.get('Nombre', '').strip()
-                apellidos = fila.get('Apellidos', '').strip()
-                dni = fila.get('DNI', '').strip()
+                    nombre = fila.get('Nombre', '').strip()
+                    apellidos = fila.get('Apellidos', '').strip()
+                    dni = fila.get('DNI', '').strip()
 
-                telefono = fila.get('Teléfono', '').strip()
-                if telefono.lower() == "sin especificar":
-                    telefono = ""
+                    telefono = fila.get('Teléfono', '').strip()
+                    if telefono.lower() == "sin especificar":
+                        telefono = ""
 
-                codigo_postal = fila.get('Código Postal', '').strip()
-                if codigo_postal.lower() == "sin especificar":
-                    codigo_postal = ""
+                    codigo_postal = fila.get('Código Postal', '').strip()
+                    if codigo_postal.lower() == "sin especificar":
+                        codigo_postal = ""
 
-                ciudad = fila.get('Ciudad', '').strip()
-                if ciudad.lower() == "sin especificar":
-                    ciudad = ""
+                    ciudad = fila.get('Ciudad', '').strip()
+                    if ciudad.lower() == "sin especificar":
+                        ciudad = ""
 
-                provincia = fila.get('Provincia', '').strip()
-                if provincia.lower() == "sin especificar":
-                    provincia = ""
+                    provincia = fila.get('Provincia', '').strip()
+                    if provincia.lower() == "sin especificar":
+                        provincia = ""
 
-                # Booleanos
-                socio = fila.get('Socio', '').strip().lower() == "true"
-                regalo = fila.get('Regalo', '').strip().lower() == "true"
+                    # Booleanos
+                    socio = fila.get('Socio', '').strip().lower() == "true"
+                    regalo = fila.get('Regalo', '').strip().lower() == "true"
 
-                # Fecha como texto
-                fecha_raw = fila.get('Fecha de Nacimiento', '').strip()
+                    # Fecha como texto
+                    fecha_raw = fila.get('Fecha de Nacimiento', '').strip()
 
-                if not fecha_raw or fecha_raw.lower() == "sin especificar":
-                    fecha_nacimiento = ""
-                else:
-                    try:
-                        fecha_convertida = datetime.strptime(fecha_raw, "%Y-%m-%d")
-                    except ValueError:
-                        try:
-                            fecha_convertida = datetime.strptime(fecha_raw, "%d/%m/%Y")
-                        except ValueError:
-                            fecha_convertida = None
-
-                    if fecha_convertida:
-                        fecha_nacimiento = fecha_convertida.strftime("%Y-%m-%d")
+                    if not fecha_raw or fecha_raw.lower() == "sin especificar":
+                        fecha_nacimiento = ""
                     else:
-                        fecha_nacimiento = fecha_raw
+                        try:
+                            fecha_convertida = datetime.strptime(fecha_raw, "%Y-%m-%d")
+                        except ValueError:
+                            try:
+                                fecha_convertida = datetime.strptime(fecha_raw, "%d/%m/%Y")
+                            except ValueError:
+                                fecha_convertida = None
 
-                # Talla segura
-                talla_camiseta = fila.get('Talla Camiseta', 'S').strip().upper()
-                if talla_camiseta not in TALLAS_VALIDAS:
-                    talla_camiseta = "S"
+                        if fecha_convertida:
+                            fecha_nacimiento = fecha_convertida.strftime("%Y-%m-%d")
+                        else:
+                            fecha_nacimiento = fecha_raw
 
-                Socios.objects.create(
-                    numero_socio=numero_socio,
-                    nombre=nombre,
-                    apellidos=apellidos,
-                    dni=dni,
-                    fecha_nacimiento=fecha_nacimiento,
-                    telefono=telefono,
-                    codigo_postal=codigo_postal,
-                    ciudad=ciudad,
-                    provincia=provincia,
-                    socio=socio,
-                    regalo=regalo,
-                    talla_camiseta=talla_camiseta
-                )
+                    # Talla segura
+                    talla_camiseta = fila.get('Talla Camiseta', 'S').strip().upper()
+                    if talla_camiseta not in TALLAS_VALIDAS:
+                        talla_camiseta = "S"
 
-            except Exception as e:
-                print(f"❌ Error en la fila {numero_fila}: {e}")
-                print(f"📄 Contenido: {fila}")
+                    Socios.objects.create(
+                        numero_socio=numero_socio,
+                        nombre=nombre,
+                        apellidos=apellidos,
+                        dni=dni,
+                        fecha_nacimiento=fecha_nacimiento,
+                        telefono=telefono,
+                        codigo_postal=codigo_postal,
+                        ciudad=ciudad,
+                        provincia=provincia,
+                        socio=socio,
+                        regalo=regalo,
+                        talla_camiseta=talla_camiseta
+                    )
 
-    return HttpResponse("Carga de socios completada correctamente")
+                except Exception as e:
+                    print(f"❌ Error en la fila {numero_fila}: {e}")
+                    print(f"📄 Contenido: {fila}")
+
+        return HttpResponse("Carga de socios completada correctamente")
+    
+    except Exception as e:
+        return HttpResponse(f"Error al leer el archivo: {str(e)}")
 
 
 def obtener_imagen_web_BeautifulSoup():

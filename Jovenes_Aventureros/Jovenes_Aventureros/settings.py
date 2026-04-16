@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-tfp#!(6mfez6ca591ch_yje^ut0%az_v7s%p%)td4+#0y!d6tm')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = True  # Modo debug activado para ver errores fácilmente en local
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_TRUSTED_ORIGINS = ['https://*.onrender.com']
 
@@ -85,24 +84,17 @@ WSGI_APPLICATION = 'Jovenes_Aventureros.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# Configuración mejorada para producción con Neon.tech u otro PostgreSQL
-# Usa DATABASE_URL de las variables de entorno en Render
-if os.environ.get('DATABASE_URL'):
-    DATABASES = {
-        'default': dj_database_url.config(
-            conn_max_age=600,
-            conn_health_checks=True,
-            ssl_require=True  # Neon.tech requiere SSL
-        )
+# Base de datos local SQLite para aplicación de escritorio
+# La base de datos se guarda en la carpeta del usuario para persistencia
+USER_DATA_DIR = os.path.join(os.path.expanduser("~"), "Jovenes_Aventureros")
+os.makedirs(USER_DATA_DIR, exist_ok=True)
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(USER_DATA_DIR, 'jovenes_aventureros.db'),
     }
-else:
-    # Desarrollo local con SQLite
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+}
 
 
 # Password validation
